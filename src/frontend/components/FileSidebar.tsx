@@ -34,7 +34,7 @@ function FileSidebar({
   onRefresh,
 }: FileSidebarProps) {
   return (
-    <aside className="flex min-h-[320px] flex-col rounded-lg border border-primary/40 bg-black/40 p-3 text-left" aria-label="Markdownファイル一覧">
+    <aside className="file-sidebar flex min-h-[320px] flex-col rounded-lg border border-primary/40 bg-black/40 p-3 text-left" aria-label="Markdownファイル一覧">
       <div className="mb-2 flex items-center justify-between gap-2">
         <p className="font-orbitron text-xs uppercase tracking-[0.18em] text-primary/80">Workspace</p>
         <div className="flex items-center gap-1">
@@ -85,9 +85,9 @@ function FileSidebar({
             return (
               <div
                 key={file.path}
-                className={`group flex items-center gap-1.5 rounded border px-2 py-1.5 transition-colors ${
+                className={`file-item group flex items-center gap-1.5 rounded border px-2 py-1.5 transition-colors ${
                   isActive
-                    ? 'border-primary/60 bg-primary/15'
+                    ? 'is-active border-primary/60 bg-primary/15'
                     : 'border-transparent hover:border-primary/30 hover:bg-primary/8'
                 }`}
               >

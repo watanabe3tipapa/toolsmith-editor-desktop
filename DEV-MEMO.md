@@ -154,6 +154,52 @@ tinyjs の WebView では保存先をユーザーが選べず、デスクトッ�
 - topics: tinyjs / txiki-js / markdown-editor / lexical / react / macos /
   desktop-app / local-first / abc-notation など。
 
+## 2026-10-21 UIテーマ切替（cosmic-ui / neo-brutalism-ui）
+
+### 方針
+
+- 既存の cosmic-ui を維持したまま、neo-brutalism-ui を追加する。
+- デザイン参考: https://lexical-on-void.watanabe3ti.workers.dev
+  - クリーム色の紙面（`#ece8da`）、白パネル、太い黒罫線、ハードオフセット
+    シャドウ、黄色のアクション、モノスペースフォント。
+- テーマは `document.documentElement.dataset.theme` で切り替え、
+  CSS変数（Tailwind v4 の `--color-*`）を上書きして既存ユーティリティを
+  そのまま活かす。
+- 選択したテーマは `localStorage`
+  （`toolsmith-editor-desktop:ui-theme`）に保存する。
+
+### 変更内容
+
+- `src/frontend/neo-brutalism-ui/index.ts`
+  - `UiTheme` 型、テーマ定義 `UI_THEMES`、`isUiTheme()`。
+- `src/frontend/neo-brutalism-ui/theme.css`
+  - `[data-theme="brutalist"]` のデザイントークンとコンポーネント上書き。
+  - ヘッダー（黒帯 + 黄色トグル）、サイドバー、ツールバー、エディタ、
+    ソースプレビュー、モーダル、ABCコントロール、ボタン類を再スタイル。
+- `src/frontend/lib/theme.ts`
+  - 初期テーマ取得、CSS適用、永続化、次テーマ算出。
+- `src/frontend/main.jsx`
+  - React描画前にテーマを適用し、初回のちらつきを防止。
+- `src/frontend/App.jsx`
+  - ヘッダーに `Palette` アイコンのテーマ切替ボタンを追加。
+  - 現在のテーマ名を表示し、クリックで cosmic ↔ brutalist を切り替え。
+  - `app-header` / `app-title` / `app-subtitle` / `app-version` /
+    `app-footer` を追加。
+- 各コンポーネントにテーマ用フックを追加:
+  `file-sidebar` / `file-item` / `editor-shell` / `state-panel` /
+  `editor-toolbar` / `toolbar-button` / `toolbar-divider` /
+  `source-preview` / `source-preview-header` / `export-menu` /
+  `modal-backdrop` / `modal-panel`。
+
+### 検証
+
+- `npm run lint` / `npm run build` 成功。
+- ビルド済みフロントエンドを Chrome headless で表示し、
+  cosmic / brutalist の両テーマをスクリーンショットで確認。
+  - ワークスペース未選択時と、モックブリッジでエディタ表示時
+    （ツールバー、ソースプレビュー、ABC）の両方を確認。
+- cosmic-ui 側の見た目に回帰がないことを確認。
+
 ## 残課題
 
 - Quarto CLI 連携（現在の `.qmd` 出力はフロントエンド生成のみ）

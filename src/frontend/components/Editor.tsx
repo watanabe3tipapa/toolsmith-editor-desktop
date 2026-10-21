@@ -711,11 +711,11 @@ function Editor() {
 
       <div className="min-w-0">
         {loading ? (
-          <section className="flex min-h-[420px] items-center justify-center rounded-lg border border-primary/40 bg-black/40 p-6">
+          <section className="state-panel flex min-h-[420px] items-center justify-center rounded-lg border border-primary/40 bg-black/40 p-6">
             <p className="text-sm text-foreground/60">ワークスペースを読み込んでいます…</p>
           </section>
         ) : !workspaceRoot ? (
-          <section className="flex min-h-[420px] flex-col items-center justify-center rounded-lg border border-primary/40 bg-black/40 p-8 text-center">
+          <section className="state-panel flex min-h-[420px] flex-col items-center justify-center rounded-lg border border-primary/40 bg-black/40 p-8 text-center">
             <FolderOpen size={36} className="text-primary/70" />
             <h2 className="mt-4 text-xl font-semibold text-foreground">ワークスペースを開く</h2>
             <p className="mt-3 max-w-md text-sm leading-6 text-foreground/60">
@@ -736,7 +736,7 @@ function Editor() {
             </button>
           </section>
         ) : !activePath ? (
-          <section className="flex min-h-[420px] flex-col items-center justify-center rounded-lg border border-primary/40 bg-black/40 p-8 text-center">
+          <section className="state-panel flex min-h-[420px] flex-col items-center justify-center rounded-lg border border-primary/40 bg-black/40 p-8 text-center">
             <FilePlus2 size={36} className="text-primary/70" />
             <h2 className="mt-4 text-xl font-semibold text-foreground">Markdownファイルがありません</h2>
             <p className="mt-3 max-w-md text-sm leading-6 text-foreground/60">
@@ -753,7 +753,7 @@ function Editor() {
           </section>
         ) : (
           <LexicalComposer key={editorKey} initialConfig={editorConfig}>
-            <div className="relative rounded-lg border border-primary/50 bg-black/50 p-3 text-left sm:p-6">
+            <div className="editor-shell relative rounded-lg border border-primary/50 bg-black/50 p-3 text-left sm:p-6">
               <div className="mb-3 flex flex-wrap items-center justify-between gap-3 border-b border-primary/20 pb-3">
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium text-foreground" title={activePath}>
@@ -811,8 +811,8 @@ function Editor() {
       </div>
 
       {conflict && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4">
-          <section className="w-full max-w-lg rounded-xl border border-amber-400/60 bg-background p-6 shadow-[0_0_40px_color-mix(in_srgb,var(--color-primary)_25%,transparent)]" role="dialog" aria-modal="true" aria-labelledby="conflict-title">
+        <div className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4">
+          <section className="modal-panel w-full max-w-lg rounded-xl border border-amber-400/60 bg-background p-6 shadow-[0_0_40px_color-mix(in_srgb,var(--color-primary)_25%,transparent)]" role="dialog" aria-modal="true" aria-labelledby="conflict-title">
             <p className="font-orbitron text-xs tracking-[0.18em] text-amber-300">CONFLICT</p>
             <h2 id="conflict-title" className="mt-3 text-xl font-semibold text-foreground">
               ファイルが外部で変更されました

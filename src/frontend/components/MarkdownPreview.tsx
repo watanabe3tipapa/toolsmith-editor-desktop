@@ -20,8 +20,8 @@ function MarkdownPreview({ markdown }: MarkdownPreviewProps) {
   const abcBlocks = useMemo(() => extractAbcBlocks(markdown), [markdown]);
 
   return (
-    <div className="relative p-4 mt-4 min-h-[150px] border border-primary/30 rounded text-left">
-      <div className="flex items-center justify-between gap-2 mb-3">
+    <div className="source-preview relative p-4 mt-4 min-h-[150px] border border-primary/30 rounded text-left">
+      <div className="source-preview-header flex items-center justify-between gap-2 mb-3">
         <h2 className="text-primary font-bold text-lg text-left">Source Preview</h2>
         {abcBlocks.length > 0 && (
           <span className="rounded border border-primary/40 bg-primary/10 px-2 py-0.5 font-orbitron text-[10px] tracking-[0.14em] text-primary">

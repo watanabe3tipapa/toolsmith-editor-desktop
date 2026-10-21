@@ -45,13 +45,14 @@ toolsmith-editor-desktop は、tinyjs（txiki.js + ネイティブ WebView）で
 - **自動保存と競合解決** — 編集停止後にファイルへ保存。外部で変更・削除された場合はダイアログで「再読み込み」「上書き」「キャンセル」を選択
 - **ABC 記法** — 楽譜ブロックを abcjs で描画し、再生・一時停止・停止・テンポ（QPM）調整が可能
 - **ネイティブメニュー** — ファイル / 編集 / 表示メニューと、新規（⌘N）・フォルダを開く（⇧⌘O）・保存（⌘S）・プレビュー切替（⇧⌘P）などのショートカット
+- **UIテーマ切替** — ヘッダーのボタンで cosmic-ui（Sci-Fi）と neo-brutalism-ui（太い罫線・ハードシャドウ）を切り替え。選択はローカルに保存
 - **書き出し** — OS の保存パネルから Markdown / HTML / JSON / Quarto / Plain Text を任意の場所へ保存
 - **ドラッグ＆ドロップ** — Finder から Markdown をドロップして即時オープン
 
 ### アーキテクチャ
 
 - **フロントエンド**: Vite + React 18 + Lexical 0.32
-- **スタイリング**: Tailwind CSS v4 + cosmic-ui（Sci-Fi テーマの UI 部品）
+- **スタイリング**: Tailwind CSS v4 + cosmic-ui / neo-brutalism-ui（切り替え可能な2テーマ）
 - **デスクトップ基盤**: tinyjs 0.60+（txiki.js バックエンド + ネイティブ WebView）
 - **バックエンド**: ファイル I/O、ワークスペース監視、パス検証、atomic write
 - **ブリッジ**: `window.tiny` を薄くラップした `src/frontend/lib/desktop.ts`
@@ -152,10 +153,12 @@ src/
     │   ├── desktop.ts              # tinyjs ブリッジ
     │   ├── export.ts               # エクスポート生成・ネイティブ保存
     │   ├── menu.ts                 # ネイティブメニュー定義
+    │   ├── theme.ts                # UIテーマの適用・永続化
     │   ├── markdown.ts             # Lexical トランスフォーマー
     │   ├── table.ts                # GFM テーブル変換
     │   └── constants.ts            # 既定文書など
-    └── cosmic-ui/                  # Sci-Fi テーマの UI 部品
+    ├── cosmic-ui/                  # Sci-Fi テーマの UI 部品
+    └── neo-brutalism-ui/           # neo-brutalismテーマ（CSS + メタデータ）
 
 docs/                               # GitHub Pages（LP）
 .github/workflows/pages.yml         # Pages デプロイ
@@ -183,6 +186,7 @@ tinyjs.json                         # tinyjs アプリ設定
 - [x] ABC 記法の楽譜描画・再生
 - [x] ネイティブ保存パネル経由のエクスポート
 - [x] ネイティブメニューとキーボードショートカット
+- [x] cosmic-ui / neo-brutalism-ui のUIテーマ切替
 - [x] GitHub Pages のランディングページ
 
 ### 次の候補

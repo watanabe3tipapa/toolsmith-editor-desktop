@@ -52,9 +52,9 @@ function ToolbarButton({ icon: Icon, isActive, onClick, title }: ToolbarButtonPr
       title={title}
       aria-label={title}
       aria-pressed={isActive || undefined}
-      className={`p-2 transition-all rounded hover:bg-primary/20 ${
+      className={`toolbar-button p-2 transition-all rounded hover:bg-primary/20 ${
         isActive
-          ? 'text-primary drop-shadow-[0_0_8px_var(--color-primary)]'
+          ? 'is-active text-primary drop-shadow-[0_0_8px_var(--color-primary)]'
           : 'text-foreground/70 hover:text-primary'
       }`}
     >
@@ -64,7 +64,7 @@ function ToolbarButton({ icon: Icon, isActive, onClick, title }: ToolbarButtonPr
 }
 
 function Divider() {
-  return <div className="w-px h-6 bg-primary/30 mx-1" aria-hidden="true" />;
+  return <div className="toolbar-divider w-px h-6 bg-primary/30 mx-1" aria-hidden="true" />;
 }
 
 type ToolbarProps = {
@@ -251,7 +251,7 @@ function Toolbar({ editor, markdown, documentName }: ToolbarProps) {
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-1 p-2 border-b border-primary/30 bg-black/20" role="toolbar" aria-label="書式ツールバー">
+    <div className="editor-toolbar flex flex-wrap items-center gap-1 p-2 border-b border-primary/30 bg-black/20" role="toolbar" aria-label="書式ツールバー">
       <ToolbarButton icon={Undo} onClick={undo} title="Undo" />
       <ToolbarButton icon={Redo} onClick={redo} title="Redo" />
       <Divider />
@@ -283,7 +283,7 @@ function Toolbar({ editor, markdown, documentName }: ToolbarProps) {
       <div className="relative">
         <ToolbarButton icon={Download} isActive={showDownloadMenu} onClick={() => setShowDownloadMenu(!showDownloadMenu)} title="エクスポート" />
         {showDownloadMenu && (
-            <div className="absolute top-full left-0 mt-1 py-1 bg-black/90 border border-primary/50 rounded shadow-lg z-50 min-w-[160px]" role="menu" aria-label="エクスポート形式">
+            <div className="export-menu absolute top-full left-0 mt-1 py-1 bg-black/90 border border-primary/50 rounded shadow-lg z-50 min-w-[160px]" role="menu" aria-label="エクスポート形式">
             {downloadOptions.map((option) => (
               <button
                 key={option.ext}

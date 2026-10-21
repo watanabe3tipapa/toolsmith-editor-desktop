@@ -54,9 +54,9 @@ function LinkEditorModal({ open, onClose, onSubmit }: LinkEditorModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4" role="presentation">
+    <div className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4" role="presentation">
       <section
-        className="w-full max-w-md rounded-xl border border-primary/50 bg-background p-6 shadow-[0_0_40px_color-mix(in_srgb,var(--color-primary)_25%,transparent)]"
+        className="modal-panel w-full max-w-md rounded-xl border border-primary/50 bg-background p-6 shadow-[0_0_40px_color-mix(in_srgb,var(--color-primary)_25%,transparent)]"
         role="dialog"
         aria-modal="true"
         aria-labelledby="toolsmith-link-modal-title"
