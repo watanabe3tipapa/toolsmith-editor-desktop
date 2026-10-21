@@ -1,0 +1,22 @@
+{
+  "$schema": "https://tinyjs.app/schema/tinyjs.schema.json",
+  "name": "toolsmith-editor-desktop",
+  "title": "Toolsmith Editor Desktop",
+  "size": "1100x760",
+  "id": "app.toolsmith.editor.desktop",
+  "version": "0.1.0",
+  "minTinyjsVersion": "0.60.0",
+  "backend": "src/backend/main.js",
+  "fileExtensions": [
+    "md",
+    "markdown"
+  ],
+  "openFolders": true,
+  "frontend": {
+    "build": "npm run build",
+    "dist": "dist",
+    "dev": "npm run dev",
+    "devUrl": "http://127.0.0.1:5173"
+  },
+  "icon": "assets/icon.png"
+}

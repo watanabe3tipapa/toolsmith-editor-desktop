@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Toolsmith Editor Desktop 実装プラン（tinyjs 版）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --surface-2: #334155;
+  --ink: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --accent-weak: color-mix(in oklab, var(--accent) 15%, var(--surface));
+  --success: #34d399;
+  --warning: #fbbf24;
+  --line: color-mix(in oklab, var(--ink) 10%, transparent);
+  --step-0: clamp(0.95rem, 0.9rem + 0.25vw, 1.05rem);
+  --step-1: clamp(1.1rem, 1rem + 0.5vw, 1.35rem);
+  --step-2: clamp(1.5rem, 1.2rem + 1.2vw, 2.2rem);
+  --step-3: clamp(2rem, 1.4rem + 2.5vw, 3.2rem);
+  --space: clamp(1.2rem, 1rem + 0.8vw, 2rem);
+  --radius: 10px;
+  --shadow: 0 4px 6px -1px rgba(0,0,0,0.3), 0 10px 30px -10px rgba(0,0,0,0.4);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Inter", "Noto Sans JP", "Hiragino Sans", "Yu Gothic", sans-serif;
+  font-size: var(--step-0);
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+
+header {
+  background: linear-gradient(160deg, var(--surface) 0%, var(--bg) 100%);
+  border-bottom: 1px solid var(--line);
+  padding: calc(var(--space) * 2.5) var(--space);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+header::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -20%;
+  width: 60%;
+  height: 200%;
+  background: radial-gradient(circle, var(--accent-weak) 0%, transparent 70%);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+header h1 {
+  font-size: var(--step-3);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  position: relative;
+  margin-bottom: calc(var(--space) * 0.5);
+}
+
+header .subtitle {
+  color: var(--muted);
+  font-size: var(--step-1);
+  max-width: 52ch;
+  margin: 0 auto;
+  position: relative;
+}
+
+main {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: calc(var(--space) * 2) var(--space);
+}
+
+section {
+  margin-bottom: calc(var(--space) * 2.2);
+}
+
+h2 {
+  font-size: var(--step-2);
+  font-weight: 700;
+  margin-bottom: calc(var(--space) * 0.8);
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+h2 .num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6em;
+  height: 1.6em;
+  background: var(--accent-weak);
+  color: var(--accent);
+  font-size: 0.55em;
+  font-weight: 700;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+h3 {
+  font-size: var(--step-1);
+  font-weight: 600;
+  margin: calc(var(--space) * 1.1) 0 calc(var(--space) * 0.4);
+  color: var(--ink);
+}
+
+p, ul, ol {
+  margin-bottom: calc(var(--space) * 0.6);
+}
+
+ul, ol {
+  padding-left: 1.4em;
+}
+
+li {
+  margin-bottom: 0.35em;
+}
+
+li::marker {
+  color: var(--accent);
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: calc(var(--space) * 1);
+  margin-bottom: calc(var(--space) * 0.8);
+  box-shadow: var(--shadow);
+}
+
+.card h3 {
+  margin-top: 0;
+  color: var(--accent);
+}
+
+.tag {
+  display: inline-block;
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 0.78em;
+  font-weight: 500;
+  padding: 0.15em 0.7em;
+  border-radius: 999px;
+  margin-right: 0.4em;
+  margin-bottom: 0.4em;
+  border: 1px solid var(--line);
+}
+
+.tag.priority-high {
+  background: color-mix(in oklab, #ef4444 15%, var(--surface));
+  color: #f87171;
+  border-color: color-mix(in oklab, #ef4444 30%, transparent);
+}
+
+.tag.priority-medium {
+  background: color-mix(in oklab, var(--warning) 15%, var(--surface));
+  color: var(--warning);
+  border-color: color-mix(in oklab, var(--warning) 30%, transparent);
+}
+
+.tag.priority-low {
+  background: color-mix(in oklab, var(--success) 15%, var(--surface));
+  color: var(--success);
+  border-color: color-mix(in oklab, var(--success) 30%, transparent);
+}
+
+code, pre {
+  font-family: ui-monospace, "SFMono-Regular", "Menlo", "Monaco", "Consolas", monospace;
+  font-size: 0.88em;
+}
+
+code {
+  background: var(--surface-2);
+  padding: 0.15em 0.4em;
+  border-radius: 5px;
+  color: var(--accent);
+}
+
+pre {
+  background: #0b1221;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: calc(var(--space) * 0.8);
+  overflow-x: auto;
+  margin-bottom: calc(var(--space) * 0.8);
+}
+
+pre code {
+  background: transparent;
+  padding: 0;
+  color: #e2e8f0;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  margin-bottom: calc(var(--space) * 0.8);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92em;
+}
+
+th, td {
+  text-align: left;
+  padding: 0.65em 0.8em;
+  border-bottom: 1px solid var(--line);
+}
+
+th {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+tr:hover td {
+  background: color-mix(in oklab, var(--accent) 4%, transparent);
+}
+
+.highlight-box {
+  background: linear-gradient(135deg, var(--accent-weak) 0%, transparent 100%);
+  border-left: 3px solid var(--accent);
+  padding: calc(var(--space) * 0.8);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  margin-bottom: calc(var(--space) * 0.8);
+}
+
+.footer {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85em;
+  padding: calc(var(--space) * 1.5) var(--space);
+  border-top: 1px solid var(--line);
+  margin-top: calc(var(--space) * 1);
+}
+
+@media print {
+  body { background: #fff; color: #000; }
+  header { background: #f5f5f5; }
+  .card { background: #fafafa; border: 1px solid #ddd; box-shadow: none; }
+  code { background: #eee; color: #0369a1; }
+  pre { background: #f5f5f5; border: 1px solid #ddd; }
+  pre code { color: #1e293b; }
+  :root {
+    --bg: #fff;
+    --surface: #fafafa;
+    --ink: #0f172a;
+    --muted: #475569;
+    --accent: #0284c7;
+    --line: #e2e8f0;
+  }
+}
+
+@page {
+  size: A4;
+  margin: 16mm;
+}
+
+@media (max-width: 520px) {
+  header h1 { font-size: 1.6rem; }
+  main { padding: var(--space); }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Toolsmith Editor Desktop<br>実装ラン（tinyjs 版）</h1>
+  <p class="subtitle">
+    Live demo 版（Web 版）とは完全に独立した、tinyjs による軽量デスクトップアプリの実装方針書
+  </p>
+</header>
+
+<main>
+
+<section>
+  <h2><span class="num">1</span>方針：Web 版とは別物として構築する</h2>
+
+  <div class="highlight-box">
+    <strong>基本方針：</strong>Live demo 版（Web 版）とはコードベースを分離し、tinyjs 上で動作する独立したデスクトップアプリとして Toolsmith Editor Desktop を構築する。Web 版の機能を参考にしつつ、デスクトップネイティブな体験を最優先とする。
+  </div>
+
+  <div class="card">
+    <h3>分離開発とする理由</h3>
+    <ul>
+      <li>Web 版はブラウザの制約（CORS、ストレージ容量、ファイルシステムアクセスなど）を受けるが、デスクトップ版はそれらを意識しない設計にできる</li>
+      <li>tinyjs の <code>tiny.fs</code>、<code>tiny.dialog</code>、<code>tiny.menu</code> などネイティブ API を最大限活用し、Web 版との互換レイヤーを削減できる</li>
+      <li>Web 版の配信サイズ最適化（PWA、Service Worker、コード分割など）と、デスクトップ版のビルド・署名・配布パイプラインは関心事が異なる</li>
+      <li>両者を独立させることで、それぞれのプラットフォームに最適な実装を選択できる</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">2</span>現状の Web 版からの機能継承方針</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>機能</th><th>Web 版の実装</th><th>Desktop 版の方針</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>リッチテキスト編集</td>
+          <td>ブラウザ上のエディタコンポーネント</td>
+          <td>同コンポーネントを流用（フロントエンドは HTML/CSS/JS のため）</td>
+        </tr>
+        <tr>
+          <td>Markdown ソース確認</td>
+          <td>クライアントサイドパーサ</td>
+          <td>同パーサを流用</td>
+        </tr>
+        <tr>
+          <td>自動保存</td>
+          <td>IndexedDB</td>
+          <td>ローカルファイルシステムへの直接書き出しに変更</td>
+        </tr>
+        <tr>
+          <td>Quarto 書き出し</td>
+          <td>ブラウザ内生成 + ダウンロード</td>
+          <td>バックエンドでファイル生成、任意のディレクトリに保存</td>
+        </tr>
+        <tr>
+          <td>MUSIC-ABC 再生</td>
+          <td>Web Audio / プレイヤーライブラリ</td>
+          <td>同ライブラリを流用。Linux では tinyjs の <code>tiny.audio.sampler</code> 活用を検討</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    エディタのコア（リッチテキスト &harr; Markdown の変換ロジック、ABC 記法の解釈）は Web 版からそのまま持ち込める。変更が必要なのは「保存先」「ファイル操作」「OS 連携」の周辺部分のみである。
+  </p>
+</section>
+
+<section>
+  <h2><span class="num">3</span>アーキテクチャ設計</h2>
+
+  <h3>3.1 全体構成</h3>
+  <pre><code>Toolsmith Editor Desktop/
+├── tinyjs.json                 # アプリ設定（ウィンドウサイズ、アイコン、メニューなど）
+├── src/
+│   ├── frontend/               # WebView 内で動作するフロントエンド
+│   │   ├── index.html
+│   │   ├── app.css
+│   │   ├── app.js              # エントリーポイント
+│   │   ├── editor/             # エディタコア（Web 版から流用・軽量化）
+│   │   │   ├── rich-editor.js
+│   │   │   ├── markdown.js     # Markdown パーサ・シリアライザ
+│   │   │   └── abc-player.js   # MUSIC-ABC 再生
+│   │   └── components/         # UI コンポーネント
+│   └── backend/                # txiki.js バックエンド
+│       ├── main.js             # エントリーポイント
+│       ├── file.js             # ファイル操作（読み書き、監視）
+│       ├── menu.js             # アプリケーションメニュー
+│       ├── dialog.js           # ネイティブダイアログ連携
+│       ├── export.js           # Quarto / HTML / PDF 書き出し
+│       └── config.js           # 設定ファイル（JSON）管理
+├── assets/
+│   ├── icon.png
+│   └── <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7b121814153b4903550b151c">[email&#160;protected]</a>
+└── package.json                # フロントエンド依存（必要に応じて）</code></pre>
+
+  <h3>3.2 レイヤー構成</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>レイヤー</th><th>役割</th><th>技術要素</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>UI Layer</td><td>画面描画、ユーザー入力受付</td><td>HTML / CSS / JS（WebView）</td></tr>
+        <tr><td>Editor Core</td><td>リッチテキスト &harr; Markdown 変換、ABC 記法処理</td><td>Vanilla JS（Web 版から流用）</td></tr>
+        <tr><td>Desktop Bridge</td><td>フロントンド &harr; バックエンド通信の抽象化</td><td><code>tiny</code> グローバル API ラッパー</td></tr>
+        <tr><td>Backend Core</td><td>ファイルシステム、ダイアログ、メニュー、書き出し</td><td>txiki.js（<code>tiny.*</code> API）</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">4</span>主要機能の実装計画</h2>
+
+  <h3>4.1 ファイル管理（コア機能）</h3>
+  <ul>
+    <li><strong>ワークスペースフォルダ：</strong>起動時にユーザーにフォルダを選択させ、その配下の <code>.md</code> ファイルを一覧表示する</li>
+    <li><strong>リアルタイム保存：</strong>編集内容を即座に該当ファイルへ書き出す（自動保存）。失敗時は UI に警告を表示</li>
+    <li><strong>ファイル監視：</strong>外部エディタでの変更を検知し、競合があればユーザーに確認ダイアログを提示</li>
+    <li><strong>ドラッグ＆ドロップ：</strong>Finder / Explorer からの <code>.md</code> ファイルドロップで即時オープン</li>
+  </ul>
+
+  <pre><code>// backend/file.js イメージ
+import { watch } from "@tarwin/tinyjs/fs";
+
+export async function openWorkspace(path) {
+  const files = await tiny.fs.readdir(path);
+  const mdFiles = files.filter((f) =&gt; f.endsWith(".md"));
+  return mdFiles;
+}
+
+export async function saveFile(path, content) {
+  await tiny.fs.writeTextFile(path, content);
+}</code></pre>
+
+  <h3>4.2 ネイティブメニュー</h3>
+  <ul>
+    <li><strong>File：</strong>新規 / 開く / 保存 / 別名で保存 / 最近使ったファイル</li>
+    <li><strong>Edit：</strong>元に戻す / やり直し / 切り取り / コピー / 貼り付け</li>
+    <li><strong>View：</strong>エディタのみ / プレビューのみ / 左右分割</li>
+    <li><strong>Export：</strong>Markdown / HTML / Quarto 形式での書き出し</li>
+  </ul>
+
+  <h3>4.3 Quarto 書き出し連携</h3>
+  <ul>
+    <li>バックエンドで一時ファイルを生成し、システムにインストールされた Quarto CLI を実行（<code>tiny.process.spawn</code>）</li>
+    <li>Quarto が未インストールの場合はダイアログで案内し、HTML 単体書き出しにフォールバック</li>
+    <li>生成物の出力先フォルダをユーザーに選択させて保存</li>
+  </ul>
+
+  <h3>4.4 MUSIC-ABC 再生</h3>
+  <ul>
+    <li>Web 版と同じ ABC プレイヤーライブラリをフロンエンドに組み込む</li>
+    <li>Linux 環境では Web Audio のクラックルノイズ問題があるため、<code>tiny.audio.sampler</code> への切り替えを検討</li>
+    <li>macOS / Windows では既存の Web Audio 実装を維持し、プラットフォーム分岐で対応</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="num">5</span>軽量化のための施策</h2>
+
+  <h3>5.1 フロントエンドの削減</h3>
+  <ul>
+    <li>Web 版で使用していたアナリティクス、PWA 関連スクリプト（Service Worker 登録等）は完全に削除</li>
+    <li>フレームワーク（React / Vue 等）を使わず、Vanilla JS + 小さな状態管理ユーティリティで構築</li>
+    <li>Markdown パーサは機能要件を満たす最小実装に絞り、不要なプラグインを外す</li>
+  </ul>
+
+  <h3>5.2 バックエンドの軽量化</h3>
+  <ul>
+    <li>txiki.js は標準で軽量なため、バックエンドは必要なモジュールのみを読み込む</li>
+    <li>外部 npm パッケージの利用は最小限に抑え、標準 API で代替可能な処理は自前実装</li>
+    <li>起動時の初期化処理を短縮し、ウィンドウ表示後に非同期でワークスペース読み込み</li>
+  </ul>
+
+  <h3>5.3 アセット最適化</h3>
+  <ul>
+    <li>フォントはシステムフォントを優先し、埋め込みフォントは削除（<code>-apple-system</code>、<code>Segoe UI</code> などを利用）</li>
+    <li>アイコンは SVG のみで管理し、PNG を含めない</li>
+    <li>CSS は未使用スタイルを削除し、単一ファイルにバンドル</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="num">6</span>実装フェーズ</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>フェーズ</th><th>内容</th><th>優先度</th><th>想定期間</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Phase 1</td>
+          <td>tinyjs プロジェクト初期化、ウィンドウ表示、フロントエンド疎通確認</td>
+          <td><span class="tag priority-high">高</span></td>
+          <td>3〜5 日</td>
+        </tr>
+        <tr>
+          <td>Phase 2</td>
+          <td>エディタコア移植（Web 版からの流用・軽量化）、Markdown パース・表示</td>
+          <td><span class="tag priority-high">高</span></td>
+          <td>1〜2 週間</td>
+        </tr>
+        <tr>
+          <td>Phase 3</td>
+          <td>ファイル管理実装（開く・保存・自動保存・ドラッグ＆ドロップ）</td>
+          <td><span class="tag priority-high">高</span></td>
+          <td>1〜2 週間</td>
+        </tr>
+        <tr>
+          <td>Phase 4</td>
+          <td>ネイティブメニュー、ダイアログ、キーボードショートカット整備</td>
+          <td><span class="tag priority-medium">中</span></td>
+          <td>1 週間</td>
+        </tr>
+        <tr>
+          <td>Phase 5</td>
+          <td>Quarto 書き出し、MUSIC-ABC 再生、設定ファイル管理</td>
+          <td><span class="tag priority-medium">中</span></td>
+          <td>1〜2 週間</td>
+        </tr>
+        <tr>
+          <td>Phase 6</td>
+          <td>ビルド・署名・配布パイプライン整備（macOS 優先、Windows / Linux は後続）</td>
+          <td><span class="tag priority-low">低</span></td>
+          <td>1〜2 週間</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">7</span>技術的リスクと対策</h2>
+
+  <div class="card">
+    <h3>リスク 1：tinyjs のプラットフォーム対応状況</h3>
+    <p>macOS が最も安定しており、Windows / Linux はベータ段階。最初のターゲットを macOS に絞り、動作確認後に他プラットフォームへ展開する方針とする。</p>
+  </div>
+
+  <div class="card">
+    <h3>リスク 2：Web 版との機能差</h3>
+    <p>Web 版の最新機能が Desktop 版に反映されない可能性がある。エディタコアは共通モジュールとして切り出し、両者で共有できる設計にしておく（Web 版側のリポジトリに core パッケージを置き、submodule または npm リンクで参照）。</p>
+  </div>
+
+  <div class="card">
+    <h3>リスク 3：ファイル I/O のエラーハンドリング</h3>
+    <p>パーミッション不足、ディスクフル、ファイル競合などのエラーは Web 版では発生しない。すべての <code>tiny.fs</code> 呼び出しを try/catch で囲み、ユーザーへの通知と復旧手順を明確にする。</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">8</span>まとめ</h2>
+
+  <p>
+    Live demo 版（Web 版）とは独立した、tinyjs による軽量デスクトップアプリとして Toolsmith Editor Desktop を構築する。
+  </p>
+  <p>
+    Web のエディタコアを流用しつつ、ファイルシステム、ネイティブメニュー、ダイアログなどデスクトップ特有の機能を txiki.js バックエンドで実装する。保存は IndexedDB ではなくローカルファイルへの直接書き出しとし、エディタらしい「ファイルを開いて編集して保存する」体験を提供する。
+  </p>
+  <p>
+    まずは macOS 向けに Phase 1〜3 の基本機能（ウィンドウ表示、エディタ移植、ファイル管理）を固め、その後メニュー整備と書き出し機能を追加する。配布サイズは tinyjs の特性を活かし、極力小さく抑えることを目標とする。
+  </p>
+</section>
+
+</main>
+
+<div class="footer">
+  作成日：2026年10月21日　/　Toolsmith Editor Desktop 実装プラン書（tinyjs 版）
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>
