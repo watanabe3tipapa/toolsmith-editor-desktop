@@ -200,6 +200,20 @@ tinyjs の WebView では保存先をユーザーが選べず、デスクトッ�
     （ツールバー、ソースプレビュー、ABC）の両方を確認。
 - cosmic-ui 側の見た目に回帰がないことを確認。
 
+## 2026-10-21 v0.1.0 配布
+
+- GitHub Releases に `v0.1.0` を作成。
+  - https://github.com/watanabe3tipapa/toolsmith-editor-desktop/releases/tag/v0.1.0
+- 配布物: `Toolsmith-Editor-Desktop-v0.1.0-macos-universal.zip`（約 6.9 MB）
+  - `tinyjs build --universal` で x86_64 + arm64 を同梱
+  - SHA-256: `54378c029b149a297d0d4e407d24700bc4aaf8bd76c6b7d14db917f72935aac1`
+- 署名は ad-hoc のみ。Developer ID 署名・公証は未実施のため、
+  Gatekeeper で初回起動がブロックされる。Release 本文と LP / README に
+  「右クリック → 開く」の回避手順を明記した。
+- LP の配布導線を `v0.1.0` のタグと Universal 対応表記へ更新。
+- 配布物は `ditto` で zip 化し、ダウンロード後に再展開・
+  `codesign --verify --deep --strict` と `lipo -archs` を確認済み。
+
 ## 残課題
 
 - Quarto CLI 連携（現在の `.qmd` 出力はフロントエンド生成のみ）

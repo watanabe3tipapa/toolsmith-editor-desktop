@@ -13,6 +13,12 @@ toolsmith-editor-desktop は、tinyjs（txiki.js + ネイティブ WebView）で
 
 **クイックリンク:** [公開サイト](https://watanabe3tipapa.github.io/toolsmith-editor-desktop/) · [Releases](https://github.com/watanabe3tipapa/toolsmith-editor-desktop/releases) · [実装プラン](./docs/toolsmith_editor_desktop_plan.html) · [開発メモ](./DEV-MEMO.md) · [Issues](https://github.com/watanabe3tipapa/toolsmith-editor-desktop/issues)
 
+## ダウンロード
+
+[Toolsmith Editor Desktop v0.1.0](https://github.com/watanabe3tipapa/toolsmith-editor-desktop/releases/tag/v0.1.0) を公開しています。macOS 15 以降の Apple Silicon / Intel に対応した Universal ビルドです。
+
+> 本ビルドは Apple Developer ID 署名・公証を行っていません（ad-hoc 署名）。初回起動時に警告が出た場合は、アプリを右クリック →「開く」を選択してください。
+
 ## コンセプト
 
 ### なぜ「Desktop」なのか

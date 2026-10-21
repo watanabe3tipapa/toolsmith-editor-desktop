@@ -212,6 +212,8 @@
     .hero-checks li { display: inline-flex; align-items: center; gap: 0.4rem; }
     .hero-checks svg { color: var(--green); }
     .hero-note { margin-top: 0.8rem; color: var(--faint); font-size: 0.76rem; }
+    .hero-note a { color: var(--primary); text-decoration: none; border-bottom: 1px solid var(--line-strong); }
+    .hero-note a:hover { border-bottom-color: var(--primary); }
     .app-frame {
       position: relative;
       border: 1px solid var(--line-strong);
@@ -466,7 +468,7 @@
             <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>ファイルはローカルに</li>
             <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>MIT License</li>
           </ul>
-          <p class="hero-note">配布ビルドは GitHub Releases で公開予定です。macOS 15 以降に対応。</p>
+          <p class="hero-note"><a href="https://github.com/watanabe3tipapa/toolsmith-editor-desktop/releases/tag/v0.1.0" target="_blank" rel="noopener noreferrer">v0.1.0 公開中</a>。macOS 15 以降（Apple Silicon / Intel）に対応。未署名のため、初回起動時はアプリを右クリック →「開く」。</p>
         </div>
 
         <div class="app-frame" role="img" aria-label="TOOLSMITH EDITOR DESKTOP の編集画面イメージ">
@@ -600,10 +602,10 @@ C D E G | A G E D | C4
         <div class="cta">
           <p class="kicker">TOOLSMITH EDITOR DESKTOP</p>
           <h2>次の一文を、ここから。</h2>
-          <p>ローカルの Markdown を、軽いデスクトップ環境で。GitHub Releases からダウンロードできます。</p>
+          <p>ローカルの Markdown を、軽いデスクトップ環境で。v0.1.0（Universal）を GitHub Releases からダウンロードできます。</p>
           <div class="hero-actions">
-            <a class="btn btn-primary" href="https://github.com/watanabe3tipapa/toolsmith-editor-desktop/releases" target="_blank" rel="noopener noreferrer">
-              GitHub Releases を見る
+            <a class="btn btn-primary" href="https://github.com/watanabe3tipapa/toolsmith-editor-desktop/releases/tag/v0.1.0" target="_blank" rel="noopener noreferrer">
+              v0.1.0 をダウンロード
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>
             </a>
             <a class="btn btn-ghost" href="https://github.com/watanabe3tipapa/toolsmith-editor-desktop" target="_blank" rel="noopener noreferrer">ソースコード</a>
