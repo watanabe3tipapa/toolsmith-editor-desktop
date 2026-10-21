@@ -214,6 +214,29 @@ tinyjs の WebView では保存先をユーザーが選べず、デスクトッ�
 - 配布物は `ditto` で zip 化し、ダウンロード後に再展開・
   `codesign --verify --deep --strict` と `lipo -archs` を確認済み。
 
+## 2026-10-21 lint / build CI とコードブロック修正
+
+### CI
+
+- `.github/workflows/ci.yml` を追加。
+  - `main` への push、Pull Request、手動実行で起動。
+  - Node.js 22 + `npm ci` で依存を固定し、`npm run lint` と
+    `npm run build` を実行。
+  - 同時実行は同じ ref 単位でキャンセル。
+- README に CI バッジを追加。
+
+### コードブロックの行装飾
+
+- brutalism で ABC コードブロックの各行に罫線が付いて見える問題を修正。
+- 原因: Lexical の `CodeNode` は `<code>` を生成するが、
+  `.editor-code` がインライン表示のままで、改行ごとにボーダーが
+  描画されていた。太い brutalism の罫線で特に目立っていた。
+- `src/frontend/App.css` の `.editor-code` に
+  `display: block` / `white-space: pre-wrap` / `overflow-x: auto` /
+  `word-break: break-word` を追加。
+- cosmic / brutalist の両テーマで、コードブロックが1つの枠に
+  収まることをスクリーンショットで確認。
+
 ## 残課題
 
 - Quarto CLI 連携（現在の `.qmd` 出力はフロントエンド生成のみ）

@@ -9,6 +9,7 @@ toolsmith-editor-desktop は、tinyjs（txiki.js + ネイティブ WebView）で
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-v0.1.0-blue.svg)](https://github.com/watanabe3tipapa/toolsmith-editor-desktop/releases)
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-live-blue.svg)](https://watanabe3tipapa.github.io/toolsmith-editor-desktop/)
+[![Lint and build](https://github.com/watanabe3tipapa/toolsmith-editor-desktop/actions/workflows/ci.yml/badge.svg)](https://github.com/watanabe3tipapa/toolsmith-editor-desktop/actions/workflows/ci.yml)
 [![GitHub](https://img.shields.io/github/issues/watanabe3tipapa/toolsmith-editor-desktop.svg)](https://github.com/watanabe3tipapa/toolsmith-editor-desktop/issues)
 
 **クイックリンク:** [公開サイト](https://watanabe3tipapa.github.io/toolsmith-editor-desktop/) · [Releases](https://github.com/watanabe3tipapa/toolsmith-editor-desktop/releases) · [実装プラン](./docs/toolsmith_editor_desktop_plan.html) · [開発メモ](./DEV-MEMO.md) · [Issues](https://github.com/watanabe3tipapa/toolsmith-editor-desktop/issues)
