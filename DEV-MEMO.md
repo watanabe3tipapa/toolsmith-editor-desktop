@@ -122,9 +122,15 @@ tinyjs の WebView では保存先をユーザーが選べず、デスクトッ�
 
 ### 検証
 
-- `gh` でリポジトリ作成、`main` へ初回push。
-- Pages の Source を GitHub Actions に設定。
-- Actions の完了後に公開URLをHTTPで確認する。
+- `gh` で `watanabe3tipapa/toolsmith-editor-desktop` を public で作成し、
+  `main` へ初回push。
+- Pages の Source を GitHub Actions に設定（`build_type: workflow`）。
+- 「Deploy LP to GitHub Pages」が成功することを確認。
+- 公開URLとアセットをHTTP確認（いずれも 200）。
+  - LP: https://watanabe3tipapa.github.io/toolsmith-editor-desktop/
+  - icon: https://watanabe3tipapa.github.io/toolsmith-editor-desktop/assets/icon.svg
+- 初回リリース未作成のため、LP上のダウンロード表現は
+  「配布予定」とし、リンク先は Releases ページにした。
 
 ## 残課題
 
