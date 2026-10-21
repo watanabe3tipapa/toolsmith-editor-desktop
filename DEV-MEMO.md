@@ -132,6 +132,28 @@ tinyjs の WebView では保存先をユーザーが選べず、デスクトッ�
 - 初回リリース未作成のため、LP上のダウンロード表現は
   「配布予定」とし、リンク先は Releases ページにした。
 
+## 2026-10-21 README / GitHub About
+
+### README
+
+- 参考リポジトリ `watanabe3tipapa/sarashina-mercury` の構成に合わせて全面改修。
+- 見出し・バッジ・クイックリンク・コンセプト・主な特徴・インストールとビルド・
+  公開・ディレクトリ構成・使い方・既知の制約とロードマップ・ドキュメント・
+  コントリビューション・連絡先・ライセンスの順で統一。
+- 対象バージョンは **v0.1.0**、ライセンスは **MIT**。
+- Web版の説明（IndexedDB / Vercel / docs へのビルド）を削除し、
+  デスクトップ版の実態（ローカルフォルダ、tinyjs、GitHub Pages は LP のみ、
+  アプリ配布は GitHub Releases）に合わせた。
+- 存在しない `README_en.md` へのリンクは付けていない。
+
+### GitHub About
+
+- description: ローカルファーストの Markdown デスクトップエディタであることを
+  日英で要約。
+- homepage: LP の公開URL。
+- topics: tinyjs / txiki-js / markdown-editor / lexical / react / macos /
+  desktop-app / local-first / abc-notation など。
+
 ## 残課題
 
 - Quarto CLI 連携（現在の `.qmd` 出力はフロントエンド生成のみ）
