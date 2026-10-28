@@ -10,6 +10,11 @@ on:
         description: 'Existing tag to build (e.g. v0.1.1)'
         required: true
         type: string
+      publish:
+        description: 'Create or update the GitHub Release (tag push always publishes)'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -99,6 +104,7 @@ jobs:
           retention-days: 14
 
       - name: Create or update GitHub Release
+        if: ${{ github.event_name == 'push' || inputs.publish }}
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.version.outputs.tag }}

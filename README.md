@@ -134,7 +134,7 @@ git tag v0.1.1
 git push origin v0.1.1
 ```
 
-タグと `tinyjs.json` の version が一致しない場合は失敗します。Actions から手動実行する場合は、既存のタグを指定してください。
+タグと `tinyjs.json` の version が一致しない場合は失敗します。Actions から手動実行する場合は既存のタグを指定してください。`publish` を有効にしない限り、ビルドと artifact 保存のみで Release は更新されません。
 
 ## 公開
 
