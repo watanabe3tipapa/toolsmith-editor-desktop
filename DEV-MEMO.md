@@ -237,6 +237,20 @@ tinyjs の WebView では保存先をユーザーが選べず、デスクトッ�
 - cosmic / brutalist の両テーマで、コードブロックが1つの枠に
   収まることをスクリーンショットで確認。
 
+## 2026-10-28 リリース自動化
+
+- `.github/workflows/release.yml` を追加。
+  - `v*` タグの push、または既存タグを指定した手動実行で起動。
+  - `macos-14` 上で Node.js 22 + tinyjs 0.60.0（`TINYJS_VERSION` で固定）を用意し、
+    `tinyjs build --universal` を実行。
+  - zip 化、SHA-256 生成、リリースノートのプレースホルダ置換、
+    GitHub Release の作成または更新まで自動化。
+  - ビルド成果物と `SHA256SUMS.txt` は Actions の artifact にも 14 日間保存。
+- `.github/release-notes.md` を追加。バージョン・ファイル名・SHA-256 を
+  `sed` で差し込むテンプレートにした。
+- タグ名と `tinyjs.json` の `version` が一致しない場合はジョブを失敗させる。
+- README にタグ push によるリリース手順を追記。
+
 ## 残課題
 
 - Quarto CLI 連携（現在の `.qmd` 出力はフロントエンド生成のみ）

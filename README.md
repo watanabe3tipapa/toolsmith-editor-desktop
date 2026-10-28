@@ -125,6 +125,17 @@ tinyjs build
 | `npm run lint` | ESLint による静的解析 |
 | `tinyjs build` | macOS アプリ（`.app`）をビルド |
 
+### リリース
+
+`tinyjs.json` の `version` を更新してコミットし、同じ番号のタグを push すると、[Release workflow](./.github/workflows/release.yml) が Universal ビルド、zip 作成、SHA-256 生成、GitHub Release 作成まで実行します。
+
+```bash
+git tag v0.1.1
+git push origin v0.1.1
+```
+
+タグと `tinyjs.json` の version が一致しない場合は失敗します。Actions から手動実行する場合は、既存のタグを指定してください。
+
 ## 公開
 
 LP は `main` ブランチへの push を契機に [GitHub Actions](./.github/workflows/pages.yml) がデプロイし、GitHub Pages で公開します。
@@ -194,6 +205,8 @@ tinyjs.json                         # tinyjs アプリ設定
 - [x] ネイティブ保存パネル経由のエクスポート
 - [x] ネイティブメニューとキーボードショートカット
 - [x] cosmic-ui / neo-brutalism-ui のUIテーマ切替
+- [x] lint / build の GitHub Actions CI
+- [x] タグ起点のリリース自動化（Universal ビルド / SHA-256 / GitHub Release）
 - [x] GitHub Pages のランディングページ
 
 ### 次の候補
