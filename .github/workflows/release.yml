@@ -83,6 +83,16 @@ jobs:
           cat SHA256SUMS.txt
         id: package
 
+      - name: Prepare release notes template
+        run: |
+          if [ -f .github/release-notes.md ]; then
+            cp .github/release-notes.md release-notes-template.md
+          else
+            # Older tags may predate the template; use the default branch copy.
+            git fetch --depth=1 origin main
+            git show FETCH_HEAD:.github/release-notes.md > release-notes-template.md
+          fi
+
       - name: Generate release notes
         env:
           TAG: ${{ steps.version.outputs.tag }}
@@ -92,7 +102,7 @@ jobs:
           sed -e "s/@@TAG@@/$TAG/g" \
               -e "s/@@ASSET@@/$ASSET/g" \
               -e "s/@@SHA256@@/$SHA/g" \
-              .github/release-notes.md > release-notes.md
+              release-notes-template.md > release-notes.md
 
       - uses: actions/upload-artifact@v4
         with:

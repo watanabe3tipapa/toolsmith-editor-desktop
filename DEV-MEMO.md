@@ -248,7 +248,8 @@ tinyjs の WebView では保存先をユーザーが選べず、デスクトッ�
   - ビルド成果物と `SHA256SUMS.txt` は Actions の artifact にも 14 日間保存。
   - 手動実行の `publish` は既定で無効。有効にした場合のみ Release を更新する。
 - `.github/release-notes.md` を追加。バージョン・ファイル名・SHA-256 を
-  `sed` で差し込むテンプレートにした。
+  `sed` で差し込むテンプレートにした。テンプレートを持たない古いタグを
+  再ビルドする場合は、main ブランチのテンプレートへフォールバックする。
 - タグ名と `tinyjs.json` の `version` が一致しない場合はジョブを失敗させる。
 - README にタグ push によるリリース手順を追記。
 
