@@ -253,10 +253,26 @@ tinyjs の WebView では保存先をユーザーが選べず、デスクトッ�
 - タグ名と `tinyjs.json` の `version` が一致しない場合はジョブを失敗させる。
 - README にタグ push によるリリース手順を追記。
 
+## 2026-10-28 内蔵Webパネルの検討
+
+- Meta Muse のようなアプリ内蔵ブラウザ／Webクリップの要望を Issue #1 に記録。
+  - https://github.com/watanabe3tipapa/toolsmith-editor-desktop/issues/1
+- tinyjs は1ウィンドウ1 WebViewで、`win.open` は自前HTMLのみ。
+  `<iframe>` もX-Frame-Options / CSPで多くのサイトが拒否するため、
+  Muse同等の内蔵ブラウザはブラウザ基盤の追加になる。
+- 段階案:
+  1. 外部ブラウザ連携＋本文抽出／Markdown取り込み（推奨MVP）
+  2. macOSネイティブWebViewの追加（tinyjs拡張）
+  3. Chromium + CDPによるエージェントブラウザ
+- まずは1の「閲覧＋クリップ」を想定。ログイン・購入・フォーム入力は
+  外部ブラウザへ誘導し、認証情報をアプリ内に保持しない。
+
 ## 残課題
 
+- 内蔵Webパネル / Webクリップ（Issue #1、まずは外部ブラウザ連携＋本文取り込み）
 - Quarto CLI 連携（現在の `.qmd` 出力はフロントエンド生成のみ）
 - 設定ファイル管理（テーマ、既定の保存先など）
 - メニューの checked 状態とプレビュー表示の同期
-- README をWeb版の内容からデスクトップ版へ更新
-- `tinyjs build` でのパッケージ確認と配布設定
+- Windows / Linux 向けビルド
+- 署名・公証を含む配布パイプライン
+- Apple Silicon実機での起動確認

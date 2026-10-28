@@ -211,6 +211,7 @@ tinyjs.json                         # tinyjs アプリ設定
 
 ### 次の候補
 
+- [ ] 内蔵Webパネル / Webクリップ（[#1](https://github.com/watanabe3tipapa/toolsmith-editor-desktop/issues/1)）
 - [ ] Quarto CLI 連携（`.qmd` のコンパイル）
 - [ ] 設定ファイル管理（テーマ、既定の保存先）
 - [ ] メニューの checked 状態とプレビュー表示の同期
