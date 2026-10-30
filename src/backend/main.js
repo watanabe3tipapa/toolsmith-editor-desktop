@@ -1,9 +1,11 @@
-import { api, setApp } from './workspace.js';
+import { api as workspaceApi, setApp } from './workspace.js';
+import { setApp as setWebClipApp, webClipApi } from './web-clip.js';
 
-export { api };
+export const api = { ...workspaceApi, ...webClipApi };
 
 export function init(app) {
   setApp(app);
+  setWebClipApp(app);
 }
 
 export function onOpenFiles(paths, app) {

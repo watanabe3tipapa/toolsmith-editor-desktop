@@ -37,6 +37,12 @@ export type WorkspaceChange = {
   event: 'change' | 'rename';
 };
 
+export type WebPageResult = {
+  url: string;
+  contentType: string;
+  html: string;
+};
+
 export type AppMenuItem = {
   id?: string;
   label?: string;
@@ -229,4 +235,12 @@ export async function renameFile(path: string, name: string): Promise<{ file: Wo
 
 export async function deleteFile(path: string): Promise<{ files: WorkspaceFile[] }> {
   return call('deleteFile', { path });
+}
+
+export async function fetchWebPage(url: string): Promise<WebPageResult> {
+  return call<WebPageResult>('fetchWebPage', { url });
+}
+
+export async function openExternal(url: string): Promise<{ url: string }> {
+  return call<{ url: string }>('openExternal', { url });
 }

@@ -7,6 +7,8 @@ export const APP_MENU: AppMenuItem[] = [
       { id: 'file:new', label: '新規ファイル…', key: 'n' },
       { id: 'file:open-folder', label: 'フォルダを開く…', key: 'shift+o' },
       { separator: true },
+      { id: 'web:clip', label: 'Webページを取り込む…' },
+      { separator: true },
       { id: 'file:save', label: '保存', key: 's' },
       { separator: true },
       {

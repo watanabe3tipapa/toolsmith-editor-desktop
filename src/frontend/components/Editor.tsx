@@ -18,10 +18,11 @@ import { LinkNode } from '@lexical/link';
 import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin';
 import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
 import { EditorState } from 'lexical';
-import { FilePlus2, FolderOpen, Save } from 'lucide-react';
+import { FilePlus2, FolderOpen, Globe2, Save } from 'lucide-react';
 import Toolbar from './Toolbar';
 import MarkdownPreview from './MarkdownPreview';
 import FileSidebar from './FileSidebar';
+import WebClipModal from './WebClipModal';
 import { DEFAULT_MARKDOWN } from '../lib/constants';
 import { TRANSFORMERS_WITH_TABLE } from '../lib/markdown';
 import { EXPORT_OPTIONS, saveExport } from '../lib/export';
@@ -200,6 +201,7 @@ function Editor() {
   const [editorKey, setEditorKey] = useState(0);
   const [conflict, setConflictState] = useState<ConflictState>(null);
   const [previewVisible, setPreviewVisible] = useState(true);
+  const [webClipOpen, setWebClipOpen] = useState(false);
 
   const workspaceRef = useRef<string | null>(null);
   const filesRef = useRef<WorkspaceFile[]>([]);
@@ -378,6 +380,56 @@ function Editor() {
       void saveNowRef.current(value);
     }, 800);
   }, []);
+
+  const appendWebClip = useCallback(
+    (clipMarkdown: string) => {
+      const targetPath = activePathRef.current;
+      if (!targetPath) {
+        void alertMessage('Webページを取り込むには、先にファイルを開いてください。');
+        return;
+      }
+      const current = markdownRef.current.trimEnd();
+      const next = `${current}${current ? '\n\n---\n\n' : ''}${clipMarkdown.trim()}\n`;
+      markdownRef.current = next;
+      setMarkdown(next);
+      const nextDirty = next !== baselineRef.current;
+      dirtyRef.current = nextDirty;
+      setDirty(nextDirty);
+      setSaveStatus(nextDirty ? 'unsaved' : 'saved');
+      setWindowTitle(nameFromPath(targetPath), nextDirty);
+      setEditorKey((key) => key + 1);
+      if (nextDirty && !conflictRef.current) scheduleSave(next);
+    },
+    [scheduleSave],
+  );
+
+  const saveWebClipAsFile = useCallback(
+    async (clipMarkdown: string, suggestedName: string): Promise<boolean> => {
+      if (!workspaceRef.current) {
+        await alertMessage('Webページを取り込むには、先にワークスペースを開いてください。');
+        return false;
+      }
+      const name = await promptText('保存するMarkdownファイル名', suggestedName);
+      if (!name) return false;
+      try {
+        if (saveTimerRef.current !== null) {
+          window.clearTimeout(saveTimerRef.current);
+          saveTimerRef.current = null;
+        }
+        await saveNowRef.current();
+        const created = await createWorkspaceFile(name, `${clipMarkdown.trim()}\n`);
+        filesRef.current = created.files;
+        setFiles(created.files);
+        await loadFile(created.file.path);
+        return true;
+      } catch (error) {
+        const parsed = parseBridgeError(error);
+        await alertMessage('Webページを保存できませんでした。', parsed.message);
+        return false;
+      }
+    },
+    [loadFile],
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -661,6 +713,7 @@ function Editor() {
     'file:new': () => void createNewFile(),
     'file:open-folder': () => void openFolder(),
     'file:save': () => void saveNowRef.current(),
+    'web:clip': () => setWebClipOpen(true),
     'view:refresh': () => void refreshFiles(),
     'view:toggle-preview': () => setPreviewVisible((visible) => !visible),
     'export:md': () => void exportDocument('md'),
@@ -766,6 +819,14 @@ function Editor() {
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
+                    onClick={() => setWebClipOpen(true)}
+                    className="inline-flex items-center gap-1.5 rounded border border-primary/40 px-3 py-1.5 text-xs text-primary transition-colors hover:bg-primary/15"
+                  >
+                    <Globe2 size={14} />
+                    Webクリップ
+                  </button>
+                  <button
+                    type="button"
                     onClick={() => void createNewFile()}
                     className="inline-flex items-center gap-1.5 rounded border border-primary/40 px-3 py-1.5 text-xs text-primary transition-colors hover:bg-primary/15"
                   >
@@ -809,6 +870,17 @@ function Editor() {
           </LexicalComposer>
         )}
       </div>
+
+      {webClipOpen && (
+        <WebClipModal
+          open={webClipOpen}
+          canInsert={Boolean(activePath)}
+          canSave={Boolean(workspaceRoot)}
+          onClose={() => setWebClipOpen(false)}
+          onInsert={appendWebClip}
+          onSave={saveWebClipAsFile}
+        />
+      )}
 
       {conflict && (
         <div className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4">

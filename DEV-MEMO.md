@@ -267,9 +267,33 @@ tinyjs の WebView では保存先をユーザーが選べず、デスクトッ�
 - まずは1の「閲覧＋クリップ」を想定。ログイン・購入・フォーム入力は
   外部ブラウザへ誘導し、認証情報をアプリ内に保持しない。
 
+## 2026-10-30 Webクリップ（MVP）
+
+- Issue #1 の段階案1「外部ブラウザ連携＋本文抽出／Markdown取り込み」を実装。
+  - `src/backend/web-clip.js`
+    - `fetchWebPage({ url })`: http/https のみ許可。15秒タイムアウト、
+      Content-Length / 実バイト数の上限（6MB）、`charset` と `<meta charset>`
+      から文字コードを判定してHTMLを返す。
+    - `openExternal({ url })`: `app.shell.open` で既定ブラウザへ渡す。
+    - URLは `URL` オブジェクトではなく `href` 文字列で `fetch` に渡す
+      （txiki.js の fetch は URL オブジェクトを受け付けない）。
+  - `src/frontend/lib/web-clip.ts`
+    - `@mozilla/readability` で本文抽出、`turndown` + GFM プラグインで
+      Markdown化。相対URL解決用に `<base href>` を注入。
+    - タイトル・サイト名・著者・公開日・URL・取得日を先頭メタ情報として付与。
+    - 本文が取れない場合は `EMPTY_CONTENT` の構造化エラー。
+  - `src/frontend/components/WebClipModal.tsx`
+    - URL入力、取得、外部ブラウザで開く、抽出結果プレビュー。
+    - 「文書に追加」（現在の文書末尾へ `---` 区切りで追記）と
+      「新規ファイルに保存」（ワークスペースへ `.md` 作成）。
+  - エディタヘッダーの「Webクリップ」ボタンと、ファイルメニューの
+    「Webページを取り込む…」から起動。
+- 認証情報は保持しない。ログインが必要なページは外部ブラウザへ誘導する。
+- アプリ内ブラウザ（ネイティブWebViewの追加）は引き続き未着手。
+
 ## 残課題
 
-- 内蔵Webパネル / Webクリップ（Issue #1、まずは外部ブラウザ連携＋本文取り込み）
+- 内蔵Webパネル（Issue #1、MVPの外部ブラウザ連携＋本文取り込みは実装済み）
 - Quarto CLI 連携（現在の `.qmd` 出力はフロントエンド生成のみ）
 - 設定ファイル管理（テーマ、既定の保存先など）
 - メニューの checked 状態とプレビュー表示の同期

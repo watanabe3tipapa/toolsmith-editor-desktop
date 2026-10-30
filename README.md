@@ -51,6 +51,7 @@ toolsmith-editor-desktop は、tinyjs（txiki.js + ネイティブ WebView）で
 - **Markdown 同期** — 編集内容を Markdown へ変換してソースプレビューに反映。Markdown ショートカット入力にも対応
 - **自動保存と競合解決** — 編集停止後にファイルへ保存。外部で変更・削除された場合はダイアログで「再読み込み」「上書き」「キャンセル」を選択
 - **ABC 記法** — 楽譜ブロックを abcjs で描画し、再生・一時停止・停止・テンポ（QPM）調整が可能
+- **Webクリップ** — URLを入力すると本文を抽出してMarkdown化。現在の文書の末尾へ追記するか、新しい `.md` としてワークスペースへ保存。ログインが必要なページは外部ブラウザで開ける
 - **ネイティブメニュー** — ファイル / 編集 / 表示メニューと、新規（⌘N）・フォルダを開く（⇧⌘O）・保存（⌘S）・プレビュー切替（⇧⌘P）などのショートカット
 - **UIテーマ切替** — ヘッダーのボタンで cosmic-ui（Sci-Fi）と neo-brutalism-ui（太い罫線・ハードシャドウ）を切り替え。選択はローカルに保存
 - **書き出し** — OS の保存パネルから Markdown / HTML / JSON / Quarto / Plain Text を任意の場所へ保存
@@ -61,7 +62,7 @@ toolsmith-editor-desktop は、tinyjs（txiki.js + ネイティブ WebView）で
 - **フロントエンド**: Vite + React 18 + Lexical 0.32
 - **スタイリング**: Tailwind CSS v4 + cosmic-ui / neo-brutalism-ui（切り替え可能な2テーマ）
 - **デスクトップ基盤**: tinyjs 0.60+（txiki.js バックエンド + ネイティブ WebView）
-- **バックエンド**: ファイル I/O、ワークスペース監視、パス検証、atomic write
+- **バックエンド**: ファイル I/O、ワークスペース監視、パス検証、atomic write、Webページ取得
 - **ブリッジ**: `window.tiny` を薄くラップした `src/frontend/lib/desktop.ts`
 
 ### データとセキュリティ
@@ -70,6 +71,7 @@ toolsmith-editor-desktop は、tinyjs（txiki.js + ネイティブ WebView）で
 - アカウント登録、テレメトリ、クラウド同期はありません
 - 最後に開いたワークスペースのパスのみ、tinyjs のローカルストアに保存します
 - ワークスペース内の読み書きはバックエンドのパスガードで検証し、エクスポート先は OS の保存パネルで選ばれたパスのみに書き込みます
+- Webクリップは入力されたURLへ直接アクセスしてHTMLを取得します。認証情報は保持せず、ログインが必要なページは外部ブラウザへ誘導します
 
 ## インストールとビルド
 
@@ -155,6 +157,7 @@ src/
 ├── backend/                        # txiki.js バックエンド
 │   ├── main.js                     # エントリポイント / ファイルオープン通知
 │   ├── workspace.js                # ワークスペース・ファイル I/O・監視
+│   ├── web-clip.js                 # Webページ取得・外部ブラウザ起動
 │   └── path-guard.js               # パス検証・エラー整形
 └── frontend/                       # WebView フロントエンド
     ├── App.jsx                     # レイアウト
@@ -165,11 +168,13 @@ src/
     │   ├── FileSidebar.tsx         # ワークスペースのファイル一覧
     │   ├── MarkdownPreview.tsx     # Markdown ソース表示
     │   ├── AbcSheet.tsx            # ABC 記法の描画・再生
+    │   ├── WebClipModal.tsx        # Webページ取り込みダイアログ
     │   ├── LinkEditorModal.tsx     # リンク入力
     │   └── ErrorBoundary.tsx       # 例外フォールバック
     ├── lib/
     │   ├── desktop.ts              # tinyjs ブリッジ
     │   ├── export.ts               # エクスポート生成・ネイティブ保存
+    │   ├── web-clip.ts             # Readability + Turndown で本文抽出
     │   ├── menu.ts                 # ネイティブメニュー定義
     │   ├── theme.ts                # UIテーマの適用・永続化
     │   ├── markdown.ts             # Lexical トランスフォーマー
@@ -190,7 +195,8 @@ tinyjs.json                         # tinyjs アプリ設定
 2. サイドバーから Markdown を選択、または「＋」で新規作成します
 3. ツールバーで書式を整え、必要ならソースプレビューを確認します
 4. 編集内容は自動保存されます。手動保存は ⌘S、または保存ボタンから
-5. 書き出したいときはツールバーのエクスポート、または「ファイル → エクスポート」から形式を選択します
+5. Webページを取り込むときは「Webクリップ」ボタン、または「ファイル → Webページを取り込む…」からURLを入力します。抽出結果は現在の文書へ追記するか、新しいMarkdownファイルとして保存できます
+6. 書き出したいときはツールバーのエクスポート、または「ファイル → エクスポート」から形式を選択します
 
 ## 既知の制約とロードマップ
 
@@ -205,13 +211,14 @@ tinyjs.json                         # tinyjs アプリ設定
 - [x] ネイティブ保存パネル経由のエクスポート
 - [x] ネイティブメニューとキーボードショートカット
 - [x] cosmic-ui / neo-brutalism-ui のUIテーマ切替
+- [x] Webクリップ（外部ブラウザ連携＋本文取り込み）
 - [x] lint / build の GitHub Actions CI
 - [x] タグ起点のリリース自動化（Universal ビルド / SHA-256 / GitHub Release）
 - [x] GitHub Pages のランディングページ
 
 ### 次の候補
 
-- [ ] 内蔵Webパネル / Webクリップ（[#1](https://github.com/watanabe3tipapa/toolsmith-editor-desktop/issues/1)）
+- [ ] 内蔵Webパネル（アプリ内ブラウザ表示、[#1](https://github.com/watanabe3tipapa/toolsmith-editor-desktop/issues/1)）
 - [ ] Quarto CLI 連携（`.qmd` のコンパイル）
 - [ ] 設定ファイル管理（テーマ、既定の保存先）
 - [ ] メニューの checked 状態とプレビュー表示の同期
