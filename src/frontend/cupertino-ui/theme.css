@@ -1,0 +1,576 @@
+/*
+ * cupertino-ui
+ * iOS / iPadOS inspired theme: system colors, grouped surfaces, SF typography
+ * and touch-sized controls. Light and dark follow the system appearance.
+ */
+
+[data-theme="cupertino"] {
+  color-scheme: light dark;
+
+  --ios-bg: #f2f2f7;
+  --ios-bg-elevated: #ffffff;
+  --ios-fill: rgba(120, 120, 128, 0.12);
+  --ios-fill-strong: rgba(120, 120, 128, 0.2);
+  --ios-label: #000000;
+  --ios-label-secondary: rgba(60, 60, 67, 0.6);
+  --ios-label-tertiary: rgba(60, 60, 67, 0.3);
+  --ios-separator: rgba(60, 60, 67, 0.29);
+  --ios-tint: #007aff;
+  --ios-orange: #ff9500;
+  --ios-red: #ff3b30;
+  --ios-green: #34c759;
+  --ios-purple: #af52de;
+  --ios-radius: 14px;
+  --ios-radius-sm: 10px;
+  --ios-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+    "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Segoe UI", sans-serif;
+  --ios-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+
+  --color-primary: #007aff;
+  --color-primary-foreground: #ffffff;
+  --color-accent: #ff9500;
+  --color-accent-foreground: #ffffff;
+  --color-secondary: #5e5ce6;
+  --color-secondary-foreground: #ffffff;
+  --color-destructive: #ff3b30;
+  --color-destructive-foreground: #ffffff;
+  --color-success: #34c759;
+  --color-success-foreground: #ffffff;
+  --color-background: #f2f2f7;
+  --color-foreground: #000000;
+
+  --font-orbitron: var(--ios-font);
+  --font-roboto: var(--ios-font);
+  --text-base: 0.9375rem;
+  --text-sm: 0.8125rem;
+  --text-xs: 0.75rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-theme="cupertino"] {
+    --ios-bg: #000000;
+    --ios-bg-elevated: #1c1c1e;
+    --ios-fill: rgba(120, 120, 128, 0.24);
+    --ios-fill-strong: rgba(120, 120, 128, 0.36);
+    --ios-label: #ffffff;
+    --ios-label-secondary: rgba(235, 235, 245, 0.6);
+    --ios-label-tertiary: rgba(235, 235, 245, 0.3);
+    --ios-separator: rgba(84, 84, 88, 0.65);
+    --ios-tint: #0a84ff;
+    --ios-orange: #ff9f0a;
+    --ios-red: #ff453a;
+    --ios-green: #30d158;
+    --ios-purple: #bf5af2;
+
+    --color-primary: #0a84ff;
+    --color-primary-foreground: #ffffff;
+    --color-accent: #ff9f0a;
+    --color-accent-foreground: #000000;
+    --color-secondary: #5e5ce6;
+    --color-secondary-foreground: #ffffff;
+    --color-destructive: #ff453a;
+    --color-destructive-foreground: #ffffff;
+    --color-success: #30d158;
+    --color-success-foreground: #000000;
+    --color-background: #000000;
+    --color-foreground: #ffffff;
+  }
+}
+
+/* Base canvas */
+
+[data-theme="cupertino"] body {
+  background-color: var(--ios-bg);
+  background-image: none;
+  color: var(--ios-label);
+  font-family: var(--ios-font);
+  font-size: 0.9375rem;
+  letter-spacing: 0;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+
+[data-theme="cupertino"] body::before,
+[data-theme="cupertino"] body::after {
+  display: none;
+}
+
+[data-theme="cupertino"] .App {
+  color: var(--ios-label);
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+[data-theme="cupertino"] ::selection {
+  background: color-mix(in srgb, var(--ios-tint) 28%, transparent);
+}
+
+[data-theme="cupertino"] a {
+  color: var(--ios-tint);
+}
+
+[data-theme="cupertino"] :where(a, button, input, textarea, select, [contenteditable="true"]):focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--ios-tint) 70%, transparent);
+  outline-offset: 2px;
+}
+
+/* Header */
+
+[data-theme="cupertino"] .app-header {
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0.85rem 0.25rem;
+  border-bottom: 0.5px solid var(--ios-separator);
+  background: transparent;
+  text-align: left;
+}
+
+@media (min-width: 640px) {
+  [data-theme="cupertino"] .app-header {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    background: color-mix(in srgb, var(--ios-bg) 82%, transparent);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+  }
+}
+
+[data-theme="cupertino"] .app-header .app-title {
+  color: var(--ios-label);
+  font-size: clamp(1.25rem, 2.2vw, 1.6rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-shadow: none;
+  filter: none;
+}
+
+[data-theme="cupertino"] .app-header .app-subtitle {
+  color: var(--ios-label-secondary);
+  letter-spacing: 0;
+}
+
+[data-theme="cupertino"] .app-header .app-version {
+  border: 0;
+  border-radius: 999px;
+  background: var(--ios-fill);
+  color: var(--ios-label-secondary);
+  font-family: var(--ios-font);
+  letter-spacing: 0;
+}
+
+[data-theme="cupertino"] .app-header .theme-toggle,
+[data-theme="cupertino"] .app-header .theme-toggle:hover {
+  border-color: transparent;
+  background: var(--ios-fill);
+  color: var(--ios-tint);
+  font-family: var(--ios-font);
+  letter-spacing: 0;
+}
+
+[data-theme="cupertino"] .app-footer {
+  border-top: 0.5px solid var(--ios-separator);
+  color: var(--ios-label-tertiary);
+  letter-spacing: 0;
+}
+
+/* Surfaces */
+
+[data-theme="cupertino"] .file-sidebar,
+[data-theme="cupertino"] .editor-shell,
+[data-theme="cupertino"] .source-preview,
+[data-theme="cupertino"] .state-panel,
+[data-theme="cupertino"] .modal-panel {
+  border: 0.5px solid var(--ios-separator);
+  border-radius: var(--ios-radius);
+  background: var(--ios-bg-elevated);
+  box-shadow: none;
+}
+
+[data-theme="cupertino"] .file-sidebar {
+  min-height: 0;
+  padding: 0.75rem;
+}
+
+[data-theme="cupertino"] .state-panel {
+  min-height: min(420px, 60dvh);
+}
+
+[data-theme="cupertino"] .state-panel h2 {
+  color: var(--ios-label);
+  letter-spacing: -0.01em;
+}
+
+[data-theme="cupertino"] .state-panel p {
+  color: var(--ios-label-secondary);
+  letter-spacing: 0;
+}
+
+/* Buttons */
+
+[data-theme="cupertino"] .App button {
+  min-width: 36px;
+  min-height: 36px;
+  border-color: transparent;
+  border-radius: var(--ios-radius-sm);
+  background: var(--ios-fill);
+  color: var(--ios-tint);
+  font-family: var(--ios-font);
+  letter-spacing: 0;
+  box-shadow: none;
+  transition: background-color 0.15s ease, opacity 0.15s ease, transform 0.1s ease;
+}
+
+[data-theme="cupertino"] .App button:hover {
+  background: var(--ios-fill-strong);
+  filter: none;
+}
+
+[data-theme="cupertino"] .App button:active {
+  transform: scale(0.97);
+  box-shadow: none;
+}
+
+[data-theme="cupertino"] .App button[class~="bg-primary"],
+[data-theme="cupertino"] .App button[class~="bg-amber-400"] {
+  background: var(--ios-tint);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+[data-theme="cupertino"] .App button[class~="bg-amber-400"] {
+  background: var(--ios-orange);
+  color: #000000;
+}
+
+[data-theme="cupertino"] .App button[disabled] {
+  opacity: 0.4;
+}
+
+@media (pointer: coarse) {
+  [data-theme="cupertino"] .App button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* Toolbar */
+
+[data-theme="cupertino"] .editor-toolbar {
+  gap: 0.15rem;
+  padding: 0.4rem 0.25rem;
+  border-bottom: 0.5px solid var(--ios-separator);
+  background: var(--ios-bg-elevated);
+}
+
+[data-theme="cupertino"] .App .toolbar-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--ios-label);
+  box-shadow: none;
+}
+
+[data-theme="cupertino"] .App .toolbar-button:hover {
+  background: var(--ios-fill);
+}
+
+[data-theme="cupertino"] .App .toolbar-button.is-active {
+  background: color-mix(in srgb, var(--ios-tint) 16%, transparent);
+  color: var(--ios-tint);
+  filter: none;
+}
+
+[data-theme="cupertino"] .App .toolbar-button.is-active:hover {
+  background: color-mix(in srgb, var(--ios-tint) 24%, transparent);
+  color: var(--ios-tint);
+}
+
+@media (pointer: coarse) {
+  [data-theme="cupertino"] .App .toolbar-button {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+[data-theme="cupertino"] .toolbar-divider {
+  width: 0.5px;
+  height: 22px;
+  margin: 0 0.25rem;
+  background: var(--ios-separator);
+}
+
+[data-theme="cupertino"] .export-menu {
+  border: 0.5px solid var(--ios-separator);
+  border-radius: 12px;
+  background: var(--ios-bg-elevated);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+}
+
+[data-theme="cupertino"] .App .export-menu button {
+  background: transparent;
+  color: var(--ios-label);
+  border-radius: 0;
+  min-height: 40px;
+}
+
+[data-theme="cupertino"] .App .export-menu button:hover {
+  background: var(--ios-fill);
+  color: var(--ios-label);
+}
+
+/* File list */
+
+[data-theme="cupertino"] .file-sidebar > div:first-child p {
+  color: var(--ios-label-secondary);
+  letter-spacing: 0.04em;
+}
+
+[data-theme="cupertino"] .file-item {
+  min-height: 44px;
+  padding: 0.5rem 0.6rem;
+  border-color: transparent;
+  border-radius: var(--ios-radius-sm);
+  background: transparent;
+}
+
+[data-theme="cupertino"] .file-item:hover {
+  border-color: transparent;
+  background: var(--ios-fill);
+}
+
+[data-theme="cupertino"] .file-item.is-active {
+  border-color: transparent;
+  background: color-mix(in srgb, var(--ios-tint) 14%, transparent);
+  box-shadow: none;
+}
+
+[data-theme="cupertino"] .file-item.is-active .text-primary,
+[data-theme="cupertino"] .file-item.is-active .text-foreground {
+  color: var(--ios-tint);
+}
+
+[data-theme="cupertino"] .file-item .text-sm {
+  font-size: 0.9375rem;
+  letter-spacing: 0;
+}
+
+[data-theme="cupertino"] .App .file-item button {
+  background: transparent;
+  color: var(--ios-label-tertiary);
+}
+
+[data-theme="cupertino"] .App .file-item button:hover {
+  background: var(--ios-fill);
+  color: var(--ios-tint);
+}
+
+[data-theme="cupertino"] .App .file-item button[class*="hover:text-red"]:hover {
+  color: var(--ios-red);
+}
+
+/* Editor */
+
+[data-theme="cupertino"] .editor-input {
+  font-family: var(--ios-font);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  color: var(--ios-label);
+  letter-spacing: 0;
+}
+
+[data-theme="cupertino"] .editor-placeholder {
+  color: var(--ios-label-tertiary);
+  font-family: var(--ios-font);
+  opacity: 1;
+}
+
+[data-theme="cupertino"] .editor-heading-h1,
+[data-theme="cupertino"] .editor-heading-h2,
+[data-theme="cupertino"] .editor-heading-h3,
+[data-theme="cupertino"] .editor-heading-h4,
+[data-theme="cupertino"] .editor-heading-h5,
+[data-theme="cupertino"] .editor-heading-h6 {
+  color: var(--ios-label);
+  text-shadow: none;
+  letter-spacing: -0.01em;
+  opacity: 1;
+}
+
+[data-theme="cupertino"] .editor-quote {
+  border-left: 3px solid var(--ios-separator);
+  color: var(--ios-label-secondary);
+}
+
+[data-theme="cupertino"] .editor-code {
+  border-radius: var(--ios-radius-sm);
+  background: var(--ios-fill);
+  font-family: var(--ios-mono);
+}
+
+[data-theme="cupertino"] .source-preview {
+  padding: 0.9rem;
+}
+
+[data-theme="cupertino"] .source-preview pre,
+[data-theme="cupertino"] .source-preview code,
+[data-theme="cupertino"] .source-preview .font-mono {
+  font-family: var(--ios-mono);
+  letter-spacing: 0;
+}
+
+/* Forms */
+
+[data-theme="cupertino"] .App input:not([type="checkbox"]),
+[data-theme="cupertino"] .App textarea,
+[data-theme="cupertino"] .App select {
+  min-height: 44px;
+  border: 0.5px solid var(--ios-separator);
+  border-radius: var(--ios-radius-sm);
+  background: var(--ios-fill);
+  color: var(--ios-label);
+  font-family: var(--ios-font);
+  font-size: 16px;
+  letter-spacing: 0;
+}
+
+[data-theme="cupertino"] .App input::placeholder,
+[data-theme="cupertino"] .App textarea::placeholder {
+  color: var(--ios-label-tertiary);
+}
+
+[data-theme="cupertino"] .App input[type="checkbox"] {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--ios-tint);
+}
+
+/* Modal: bottom sheet on phones */
+
+[data-theme="cupertino"] .modal-backdrop {
+  background: color-mix(in srgb, #000000 45%, transparent);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+[data-theme="cupertino"] .modal-panel {
+  background: var(--ios-bg-elevated);
+  text-align: left;
+}
+
+[data-theme="cupertino"] .modal-panel button[aria-pressed] {
+  color: var(--ios-label);
+}
+
+[data-theme="cupertino"] .modal-panel button[aria-pressed="true"] {
+  border-color: var(--ios-tint);
+  background: color-mix(in srgb, var(--ios-tint) 12%, transparent);
+  color: var(--ios-tint);
+}
+
+@media (max-width: 639px) {
+  [data-theme="cupertino"] .modal-backdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  [data-theme="cupertino"] .modal-panel {
+    width: 100%;
+    max-width: none;
+    max-height: 92dvh;
+    border-radius: 18px 18px 0 0;
+    border-bottom: 0;
+    padding-bottom: calc(1.25rem + env(safe-area-inset-bottom));
+  }
+}
+
+/* Phone layout: file list becomes a horizontal chip row */
+
+@media (max-width: 639px) {
+  [data-theme="cupertino"] .App {
+    padding-top: max(0.75rem, env(safe-area-inset-top));
+  }
+
+  [data-theme="cupertino"] .file-sidebar {
+    padding: 0.6rem;
+  }
+
+  [data-theme="cupertino"] .file-sidebar .file-list {
+    display: flex;
+    gap: 0.4rem;
+    padding-bottom: 0.15rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+  }
+
+  [data-theme="cupertino"] .file-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  [data-theme="cupertino"] .file-list .file-item {
+    flex: 0 0 auto;
+    min-width: 150px;
+    max-width: 220px;
+    scroll-snap-align: start;
+  }
+
+  [data-theme="cupertino"] .editor-shell {
+    padding: 0.65rem;
+  }
+
+  [data-theme="cupertino"] .editor-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    flex-wrap: nowrap;
+  }
+
+  [data-theme="cupertino"] .toolbar-scroll {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    align-items: center;
+    gap: 0.15rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+  }
+
+  [data-theme="cupertino"] .toolbar-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  [data-theme="cupertino"] .toolbar-scroll > .toolbar-divider:last-child {
+    display: none;
+  }
+
+  [data-theme="cupertino"] .export-menu {
+    left: auto;
+    right: 0;
+  }
+}
+
+[data-theme="cupertino"] ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+[data-theme="cupertino"] ::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: var(--ios-fill-strong);
+}
+
+[data-theme="cupertino"] ::-webkit-scrollbar-track {
+  background: transparent;
+}

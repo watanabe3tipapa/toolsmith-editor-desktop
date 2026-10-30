@@ -351,6 +351,52 @@ tinyjs の WebView では保存先をユーザーが選べず、デスクトッ�
     ハッシュ片（`bu` / `TAHt`）のみで、いずれも誤検出。修正なし。
 - v0.1.1 の内容は設定ファイル管理と Webクリップ / Quarto 連携の改善。
 
+## 2026-10-31 CUPERTINO テーマ（iOS / iPadOS 風）
+
+### 目的
+
+iPhone / iPad での閲覧・タッチ操作を想定した見た目を追加する。tinyjs は
+macOS / Windows / Linux のみ対応のため、アプリを iOS 上で動かすものではなく、
+iPad を Sidecar やタッチ操作で使う場合、および将来の Web 版を見据えた
+スタイルと操作領域の整備として位置づける。
+
+### 変更内容
+
+- `src/frontend/lib/themes.ts` を追加し、`UiTheme` / `UI_THEMES` /
+  `isUiTheme` / `nextTheme` を集約。テーマは
+  COSMIC → NEO BRUTALISM → CUPERTINO → COSMIC の順で切り替わる。
+- `src/backend/settings.js` の `isUiTheme` に `cupertino` を追加。
+  不正なテーマ名は従来どおり `INVALID_SETTING` で拒否する。
+- `src/frontend/cupertino-ui/theme.css` を追加。
+  - iOS のシステムカラー（grouped background / separator / tint）を
+    `--color-*` に割り当て、既存の Tailwind ユーティリティをそのまま使う。
+  - ライト / ダークは `prefers-color-scheme` に自動追従。
+  - SF Pro / Hiragino Sans のシステムフォント、本文 17px / 行間 1.7。
+  - ボタンは最低 36px、`pointer: coarse` では 44px。入力欄は 16px にして
+    iOS Safari のフォーカス時ズームを避ける。
+  - `env(safe-area-inset-*)`、`viewport-fit=cover`、半透明の
+    バックドロップ付きヘッダー（640px 以上で sticky）。
+  - 640px 未満ではファイル一覧を横スクロールのチップ列にし、モーダルを
+    ボトムシート化。ツールバーは1行の横スクロールに切り替える。
+- `Toolbar.tsx` に `.toolbar-scroll` ラッパーを追加。広い画面では
+  `display: contents` で従来の折り返しレイアウトを維持し、狭い画面の
+  CUPERTINO のみ横スクロールにする。エクスポートメニューはスクロール領域の
+  外に置き、クリップされないようにした。
+- `FileSidebar.tsx` に `min-w-0` を追加。グリッド項目の自動最小幅で
+  ページ全体が横に広がる問題を修正（iPhone 幅で必須）。
+- `applyTheme` が `<meta name="theme-color">` をテーマとシステムの明暗に
+  合わせて更新するようにした。
+
+### 検証
+
+- Chrome headless + モックブリッジで、デスクトップ（1100×760）、
+  iPad（1024×768）、iPhone（390×844）のライト / ダークを確認。
+  - 設定モーダルのボトムシート、テーマ選択のハイライト、ファイルチップ、
+    ツールバー1行スクロール、エクスポートメニューの位置を確認。
+- `npm run lint` / `npm run build` / `tinyjs build` 成功。
+- `settings.json` へ `cupertino` を保存・再読込できること、不正値を
+  拒否すること、壊れたJSONから既定値で復旧することを確認。
+
 ## 残課題
 
 - 内蔵Webパネル（Issue #1、MVPの外部ブラウザ連携＋本文取り込みは実装済み）

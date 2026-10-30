@@ -9,8 +9,8 @@ import {
   SlidersHorizontal,
   X,
 } from 'lucide-react';
-import { UI_THEMES } from '../neo-brutalism-ui';
-import type { UiTheme } from '../neo-brutalism-ui';
+import { UI_THEMES } from '../lib/themes';
+import type { UiTheme } from '../lib/themes';
 import { confirmAction, parseBridgeError, pickWorkspaceFolder } from '../lib/desktop';
 import type { AppSettings } from '../lib/desktop';
 
@@ -139,7 +139,7 @@ function SettingsModal({ open, settings, settingsPath, onClose, onSave, onReset,
         <div className="mt-5 min-h-0 flex-1 space-y-5 overflow-y-auto pr-1">
           <section>
             <h3 className="text-sm font-medium text-foreground">UIテーマ</h3>
-            <div className="mt-2 grid gap-2 sm:grid-cols-2">
+            <div className="mt-2 grid gap-2 sm:grid-cols-3">
               {(Object.keys(UI_THEMES) as UiTheme[]).map((themeId) => {
                 const theme = UI_THEMES[themeId];
                 const selected = draft.theme === themeId;

@@ -247,3 +247,10 @@
   font-family: var(--font-orbitron);
   font-size: 13px;
 }
+
+/* Formatting buttons wrapper: transparent on wide layouts so the toolbar
+   keeps its existing flex-wrap behaviour. Narrow layouts can opt into a
+   single scrollable row. */
+.toolbar-scroll {
+  display: contents;
+}

@@ -248,34 +248,36 @@ function Toolbar({ editor, markdown, onExport, onQuartoExport }: ToolbarProps) {
 
   return (
     <div className="editor-toolbar flex flex-wrap items-center gap-1 p-2 border-b border-primary/30 bg-black/20" role="toolbar" aria-label="書式ツールバー">
-      <ToolbarButton icon={Undo} onClick={undo} title="Undo" />
-      <ToolbarButton icon={Redo} onClick={redo} title="Redo" />
-      <Divider />
-      <ToolbarButton icon={Bold} isActive={isBold} onClick={() => formatText('bold')} title="Bold" />
-      <ToolbarButton icon={Italic} isActive={isItalic} onClick={() => formatText('italic')} title="Italic" />
-      <ToolbarButton icon={Underline} isActive={isUnderline} onClick={() => formatText('underline')} title="Underline" />
-      <ToolbarButton icon={Strikethrough} isActive={isStrikethrough} onClick={() => formatText('strikethrough')} title="Strikethrough" />
-      <ToolbarButton icon={Code} isActive={isCode} onClick={() => formatText('code')} title="Inline Code" />
-      <ToolbarButton icon={Subscript} isActive={isSubscript} onClick={() => formatText('subscript')} title="Subscript" />
-      <ToolbarButton icon={Superscript} isActive={isSuperscript} onClick={() => formatText('superscript')} title="Superscript" />
-      <Divider />
-      <ToolbarButton icon={Heading1} onClick={() => insertHeading('h1')} title="Heading 1" />
-      <ToolbarButton icon={Heading2} onClick={() => insertHeading('h2')} title="Heading 2" />
-      <ToolbarButton icon={Heading3} onClick={() => insertHeading('h3')} title="Heading 3" />
-      <ToolbarButton icon={Heading4} onClick={() => insertHeading('h4')} title="Heading 4" />
-      <ToolbarButton icon={Heading5} onClick={() => insertHeading('h5')} title="Heading 5" />
-      <ToolbarButton icon={Heading6} onClick={() => insertHeading('h6')} title="Heading 6" />
-      <Divider />
-      <ToolbarButton icon={List} onClick={() => insertList('bullet')} title="Bullet List" />
-      <ToolbarButton icon={ListOrdered} onClick={() => insertList('number')} title="Numbered List" />
-      <ToolbarButton icon={ListChecks} onClick={() => insertList('check')} title="Check List" />
-      <ToolbarButton icon={Quote} onClick={insertQuote} title="Quote" />
-      <ToolbarButton icon={Terminal} onClick={insertCodeBlock} title="Code Block" />
-      <Divider />
-      <ToolbarButton icon={Link} isActive={isLink} onClick={insertLink} title="Insert Link" />
-      <ToolbarButton icon={Table2} onClick={insertTable} title="Insert Table" />
-      <ToolbarButton icon={Minus} onClick={insertHorizontalRule} title="Horizontal Rule" />
-      <Divider />
+      <div className="toolbar-scroll">
+        <ToolbarButton icon={Undo} onClick={undo} title="Undo" />
+        <ToolbarButton icon={Redo} onClick={redo} title="Redo" />
+        <Divider />
+        <ToolbarButton icon={Bold} isActive={isBold} onClick={() => formatText('bold')} title="Bold" />
+        <ToolbarButton icon={Italic} isActive={isItalic} onClick={() => formatText('italic')} title="Italic" />
+        <ToolbarButton icon={Underline} isActive={isUnderline} onClick={() => formatText('underline')} title="Underline" />
+        <ToolbarButton icon={Strikethrough} isActive={isStrikethrough} onClick={() => formatText('strikethrough')} title="Strikethrough" />
+        <ToolbarButton icon={Code} isActive={isCode} onClick={() => formatText('code')} title="Inline Code" />
+        <ToolbarButton icon={Subscript} isActive={isSubscript} onClick={() => formatText('subscript')} title="Subscript" />
+        <ToolbarButton icon={Superscript} isActive={isSuperscript} onClick={() => formatText('superscript')} title="Superscript" />
+        <Divider />
+        <ToolbarButton icon={Heading1} onClick={() => insertHeading('h1')} title="Heading 1" />
+        <ToolbarButton icon={Heading2} onClick={() => insertHeading('h2')} title="Heading 2" />
+        <ToolbarButton icon={Heading3} onClick={() => insertHeading('h3')} title="Heading 3" />
+        <ToolbarButton icon={Heading4} onClick={() => insertHeading('h4')} title="Heading 4" />
+        <ToolbarButton icon={Heading5} onClick={() => insertHeading('h5')} title="Heading 5" />
+        <ToolbarButton icon={Heading6} onClick={() => insertHeading('h6')} title="Heading 6" />
+        <Divider />
+        <ToolbarButton icon={List} onClick={() => insertList('bullet')} title="Bullet List" />
+        <ToolbarButton icon={ListOrdered} onClick={() => insertList('number')} title="Numbered List" />
+        <ToolbarButton icon={ListChecks} onClick={() => insertList('check')} title="Check List" />
+        <ToolbarButton icon={Quote} onClick={insertQuote} title="Quote" />
+        <ToolbarButton icon={Terminal} onClick={insertCodeBlock} title="Code Block" />
+        <Divider />
+        <ToolbarButton icon={Link} isActive={isLink} onClick={insertLink} title="Insert Link" />
+        <ToolbarButton icon={Table2} onClick={insertTable} title="Insert Table" />
+        <ToolbarButton icon={Minus} onClick={insertHorizontalRule} title="Horizontal Rule" />
+        <Divider />
+      </div>
       <div className="relative">
         <ToolbarButton icon={Download} isActive={showDownloadMenu} onClick={() => setShowDownloadMenu(!showDownloadMenu)} title="エクスポート" />
         {showDownloadMenu && (

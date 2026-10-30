@@ -60,7 +60,7 @@ export type QuartoRenderResult = {
 
 export type AppSettings = {
   version: number;
-  theme: 'cosmic' | 'brutalist';
+  theme: 'cosmic' | 'brutalist' | 'cupertino';
   lastWorkspace: string | null;
   previewVisible: boolean;
   autoSaveDelayMs: number;

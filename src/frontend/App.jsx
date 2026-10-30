@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Palette, Settings2 } from 'lucide-react';
 import Editor from './components/Editor';
 import SettingsModal from './components/SettingsModal';
-import { UI_THEMES } from './neo-brutalism-ui';
-import { applyTheme, getInitialTheme, nextTheme, persistTheme } from './lib/theme';
+import { UI_THEMES, nextTheme } from './lib/themes';
+import { applyTheme, getInitialTheme, persistTheme } from './lib/theme';
 import {
   DEFAULT_SETTINGS,
   getSettingsPath,
@@ -14,6 +14,7 @@ import {
 import { parseBridgeError, revealSettings as revealSettingsFile } from './lib/desktop';
 import './App.css';
 import './neo-brutalism-ui/theme.css';
+import './cupertino-ui/theme.css';
 
 function App() {
   const [theme, setTheme] = useState(getInitialTheme);

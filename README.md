@@ -54,7 +54,7 @@ toolsmith-editor-desktop は、tinyjs（txiki.js + ネイティブ WebView）で
 - **Webクリップ** — URLを入力すると本文を抽出してMarkdown化。現在の文書の末尾へ追記するか、新しい `.md` としてワークスペースへ保存。ログインが必要なページは外部ブラウザで開ける
 - **設定ファイル** — UIテーマ、プレビュー表示、自動保存の待ち時間、既定の書き出し先をJSONファイルへ保存。ヘッダーの「設定」または表示メニューから変更でき、設定ファイルをFinderで開ける
 - **ネイティブメニュー** — ファイル / 編集 / 表示メニューと、新規（⌘N）・フォルダを開く（⇧⌘O）・保存（⌘S）・プレビュー切替（⇧⌘P）などのショートカット
-- **UIテーマ切替** — ヘッダーのボタンで cosmic-ui（Sci-Fi）と neo-brutalism-ui（太い罫線・ハードシャドウ）を切り替え。選択はローカルに保存
+- **UIテーマ切替** — ヘッダーのボタンで cosmic-ui（Sci-Fi）、neo-brutalism-ui（太い罫線・ハードシャドウ）、cupertino-ui（iOS / iPadOS 風・タッチ操作向け）を切り替え。選択はローカルに保存
 - **書き出し** — OS の保存パネルから Markdown / HTML / JSON / Quarto / Plain Text を任意の場所へ保存
 - **Quarto CLI 連携** — インストール済みの Quarto CLI で HTML（単体ファイル）または PDF をレンダリング。Quarto 未導入時は HTML 単体出力へフォールバック
 - **ドラッグ＆ドロップ** — Finder から Markdown をドロップして即時オープン
@@ -62,7 +62,7 @@ toolsmith-editor-desktop は、tinyjs（txiki.js + ネイティブ WebView）で
 ### アーキテクチャ
 
 - **フロントエンド**: Vite + React 18 + Lexical 0.32
-- **スタイリング**: Tailwind CSS v4 + cosmic-ui / neo-brutalism-ui（切り替え可能な2テーマ）
+- **スタイリング**: Tailwind CSS v4 + cosmic-ui / neo-brutalism-ui / cupertino-ui（切り替え可能な3テーマ）
 - **デスクトップ基盤**: tinyjs 0.60+（txiki.js バックエンド + ネイティブ WebView）
 - **バックエンド**: ファイル I/O、ワークスペース監視、パス検証、atomic write、Webページ取得、Quarto CLI 実行、設定ファイル管理
 - **ブリッジ**: `window.tiny` を薄くラップした `src/frontend/lib/desktop.ts`
@@ -182,12 +182,14 @@ src/
     │   ├── web-clip.ts             # Readability + Turndown で本文抽出
     │   ├── settings.ts             # 設定の読み込み・更新・移行
     │   ├── menu.ts                 # ネイティブメニュー定義
+    │   ├── themes.ts               # UIテーマの一覧・判定・切り替え順
     │   ├── theme.ts                # UIテーマの適用・永続化
     │   ├── markdown.ts             # Lexical トランスフォーマー
     │   ├── table.ts                # GFM テーブル変換
     │   └── constants.ts            # 既定文書など
     ├── cosmic-ui/                  # Sci-Fi テーマの UI 部品
-    └── neo-brutalism-ui/           # neo-brutalismテーマ（CSS + メタデータ）
+    ├── neo-brutalism-ui/           # neo-brutalismテーマ（CSS）
+    └── cupertino-ui/               # iOS / iPadOS風テーマ（CSS）
 
 docs/                               # GitHub Pages（LP）
 .github/workflows/pages.yml         # Pages デプロイ
@@ -217,7 +219,7 @@ tinyjs.json                         # tinyjs アプリ設定
 - [x] ABC 記法の楽譜描画・再生
 - [x] ネイティブ保存パネル経由のエクスポート
 - [x] ネイティブメニューとキーボードショートカット
-- [x] cosmic-ui / neo-brutalism-ui のUIテーマ切替
+- [x] cosmic-ui / neo-brutalism-ui / cupertino-ui のUIテーマ切替
 - [x] Webクリップ（外部ブラウザ連携＋本文取り込み）
 - [x] Quarto CLI 連携（HTML / PDF レンダリング、未導入時は HTML 出力へフォールバック）
 - [x] 設定ファイル管理（UIテーマ、プレビュー、自動保存、既定の書き出し先）

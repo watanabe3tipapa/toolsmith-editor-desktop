@@ -28,7 +28,7 @@ async function settingsPath() {
 }
 
 function isUiTheme(value) {
-  return value === 'cosmic' || value === 'brutalist';
+  return value === 'cosmic' || value === 'brutalist' || value === 'cupertino';
 }
 
 function normalizeSettings(raw) {
