@@ -32,9 +32,8 @@ import {
   Table2,
   Download,
 } from 'lucide-react';
-import { EXPORT_OPTIONS, saveExport } from '../lib/export';
-import type { ExportOption } from '../lib/export';
-import { alertMessage, parseBridgeError } from '../lib/desktop';
+import { EXPORT_OPTIONS } from '../lib/export';
+import type { ExportFormat, ExportOption } from '../lib/export';
 import type { QuartoFormat } from '../lib/desktop';
 import LinkEditorModal from './LinkEditorModal';
 
@@ -71,11 +70,11 @@ function Divider() {
 type ToolbarProps = {
   editor: any;
   markdown: string;
-  documentName?: string | null;
+  onExport?: (format: ExportFormat) => void;
   onQuartoExport?: (format: QuartoFormat) => void;
 };
 
-function Toolbar({ editor, markdown, documentName, onQuartoExport }: ToolbarProps) {
+function Toolbar({ editor, markdown, onExport, onQuartoExport }: ToolbarProps) {
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
   const [isUnderline, setIsUnderline] = useState(false);
@@ -242,14 +241,9 @@ function Toolbar({ editor, markdown, documentName, onQuartoExport }: ToolbarProp
 
   const downloadOptions = EXPORT_OPTIONS(markdown);
 
-  const handleExport = async (option: ExportOption) => {
+  const handleExport = (option: ExportOption) => {
     setShowDownloadMenu(false);
-    try {
-      await saveExport(option, documentName);
-    } catch (error) {
-      const parsed = parseBridgeError(error);
-      await alertMessage('エクスポートできませんでした。', parsed.message);
-    }
+    onExport?.(option.format);
   };
 
   return (

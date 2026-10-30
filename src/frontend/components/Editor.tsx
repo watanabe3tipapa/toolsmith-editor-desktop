@@ -33,10 +33,8 @@ import {
   confirmAction,
   createFile as createWorkspaceFile,
   deleteFile as deleteWorkspaceFile,
-  getLastWorkspace,
   hasDesktopBridge,
   listFiles,
-  readFile as readWorkspaceFile,
   onFileDrop,
   onMenuCommand,
   onOpenPaths,
@@ -47,15 +45,18 @@ import {
   pickWorkspaceFolder,
   pickSavePath,
   promptText,
-  rememberWorkspace,
+  readFile as readWorkspaceFile,
   renameFile as renameWorkspaceFile,
   checkQuarto,
   renderQuarto,
   setAppMenu,
+  suggestExportPath,
   setWindowTitle,
+  writeExportFile,
   writeFile,
 } from '../lib/desktop';
-import type { OpenWorkspaceResult, QuartoFormat, WorkspaceFile } from '../lib/desktop';
+import type { AppSettings, OpenWorkspaceResult, QuartoFormat, WorkspaceFile } from '../lib/desktop';
+import { loadSettings } from '../lib/settings';
 
 const theme = {
   ltr: 'ltr',
@@ -189,7 +190,11 @@ function formatLastSaved(lastSaved: Date | null): string {
   return lastSaved.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
 }
 
-function Editor() {
+function Editor({ settings, onPatchSettings, onOpenSettings }: {
+  settings: AppSettings | null;
+  onPatchSettings: (patch: Partial<AppSettings>) => Promise<AppSettings>;
+  onOpenSettings: () => void;
+}) {
   const [workspaceRoot, setWorkspaceRoot] = useState<string | null>(null);
   const [files, setFiles] = useState<WorkspaceFile[]>([]);
   const [activePath, setActivePath] = useState<string | null>(null);
@@ -203,7 +208,7 @@ function Editor() {
   const [editor, setEditor] = useState(null);
   const [editorKey, setEditorKey] = useState(0);
   const [conflict, setConflictState] = useState<ConflictState>(null);
-  const [previewVisible, setPreviewVisible] = useState(true);
+  const [previewVisible, setPreviewVisible] = useState(settings?.previewVisible ?? true);
   const [webClipOpen, setWebClipOpen] = useState(false);
 
   const workspaceRef = useRef<string | null>(null);
@@ -218,6 +223,24 @@ function Editor() {
   const pendingSaveRef = useRef<string | null>(null);
   const conflictRef = useRef<ConflictState>(null);
   const saveNowRef = useRef<(content?: string, force?: boolean) => Promise<void>>(async () => {});
+  const autoSaveDelayRef = useRef(settings?.autoSaveDelayMs ?? 800);
+  const defaultExportDirRef = useRef<string | null>(settings?.defaultExportDir ?? null);
+  const previewVisibleRef = useRef(settings?.previewVisible ?? true);
+  const onPatchSettingsRef = useRef(onPatchSettings);
+  const onOpenSettingsRef = useRef(onOpenSettings);
+
+  useEffect(() => {
+    onPatchSettingsRef.current = onPatchSettings;
+    onOpenSettingsRef.current = onOpenSettings;
+  }, [onPatchSettings, onOpenSettings]);
+
+  useEffect(() => {
+    if (!settings) return;
+    autoSaveDelayRef.current = settings.autoSaveDelayMs;
+    defaultExportDirRef.current = settings.defaultExportDir;
+    previewVisibleRef.current = settings.previewVisible;
+    setPreviewVisible(settings.previewVisible);
+  }, [settings]);
 
   const setConflict = useCallback((next: ConflictState) => {
     conflictRef.current = next;
@@ -272,7 +295,9 @@ function Editor() {
       filesRef.current = opened.files;
       setWorkspaceRoot(opened.root);
       setFiles(opened.files);
-      await rememberWorkspace(opened.root);
+      void onPatchSettingsRef.current({ lastWorkspace: opened.root }).catch((error) => {
+        console.error('ワークスペースを設定へ保存できませんでした。', error);
+      });
       const nextPath =
         preferredPath && opened.files.some((file) => file.path === preferredPath)
           ? preferredPath
@@ -367,7 +392,14 @@ function Editor() {
     if (!option) return;
     const base = nameFromPath(activePathRef.current);
     try {
-      await saveExport(option, base);
+      const directDir = defaultExportDirRef.current;
+      if (directDir) {
+        const target = await suggestExportPath(directDir, suggestedExportName(base, option.ext));
+        await writeExportFile(target.path, option.content);
+        await alertMessage('書き出しました。', target.path);
+      } else {
+        await saveExport(option, base);
+      }
     } catch (error) {
       const parsed = parseBridgeError(error);
       await alertMessage('エクスポートできませんでした。', parsed.message);
@@ -400,7 +432,9 @@ function Editor() {
           }
           return;
         }
-        const target = await pickSavePath([format], suggestedExportName(base, format));
+        const target = defaultExportDirRef.current
+          ? (await suggestExportPath(defaultExportDirRef.current, suggestedExportName(base, format))).path
+          : await pickSavePath([format], suggestedExportName(base, format));
         if (!target) return;
         const result = await renderQuarto({
           markdown: markdownRef.current,
@@ -424,7 +458,7 @@ function Editor() {
     saveTimerRef.current = window.setTimeout(() => {
       saveTimerRef.current = null;
       void saveNowRef.current(value);
-    }, 800);
+    }, autoSaveDelayRef.current);
   }, []);
 
   const appendWebClip = useCallback(
@@ -489,7 +523,8 @@ function Editor() {
         return;
       }
       try {
-        const last = await getLastWorkspace();
+        const current = await loadSettings();
+        const last = current.lastWorkspace;
         if (last) {
           try {
             await startWorkspace(last);
@@ -761,7 +796,15 @@ function Editor() {
     'file:save': () => void saveNowRef.current(),
     'web:clip': () => setWebClipOpen(true),
     'view:refresh': () => void refreshFiles(),
-    'view:toggle-preview': () => setPreviewVisible((visible) => !visible),
+    'view:toggle-preview': () => {
+      const next = !previewVisibleRef.current;
+      previewVisibleRef.current = next;
+      setPreviewVisible(next);
+      void onPatchSettingsRef.current({ previewVisible: next }).catch((error) => {
+        console.error('プレビュー設定を保存できませんでした。', error);
+      });
+    },
+    'app:settings': () => onOpenSettingsRef.current(),
     'export:md': () => void exportDocument('md'),
     'export:html': () => void exportDocument('html'),
     'export:json': () => void exportDocument('json'),
@@ -894,7 +937,7 @@ function Editor() {
               <Toolbar
                 editor={editor}
                 markdown={markdown}
-                documentName={activePath ? nameFromPath(activePath) : null}
+                onExport={(format) => void exportDocument(format)}
                 onQuartoExport={(format) => void exportWithQuarto(format)}
               />
               <div className="relative mt-2 min-h-[300px] text-left">

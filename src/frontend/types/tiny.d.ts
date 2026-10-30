@@ -40,6 +40,7 @@ declare global {
         setTitle(title: string): void;
         onDrop(handler: (paths: string[]) => void): () => void;
       };
+      log?(message: string): void;
     };
   }
 }

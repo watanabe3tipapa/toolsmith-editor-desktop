@@ -58,6 +58,22 @@ export type QuartoRenderResult = {
   mtimeMs: number;
 };
 
+export type AppSettings = {
+  version: number;
+  theme: 'cosmic' | 'brutalist';
+  lastWorkspace: string | null;
+  previewVisible: boolean;
+  autoSaveDelayMs: number;
+  defaultExportDir: string | null;
+};
+
+export type SettingsEnvelope = {
+  settings: AppSettings;
+  path: string;
+  exists: boolean;
+  corrupted?: boolean;
+};
+
 export type AppMenuItem = {
   id?: string;
   label?: string;
@@ -103,6 +119,7 @@ type TinyApi = {
     setTitle(title: string): void;
     onDrop(handler: (paths: string[]) => void): () => void;
   };
+  log?(message: string): void;
 };
 
 declare global {
@@ -271,4 +288,24 @@ export async function renderQuarto(params: {
   outputPath: string;
 }): Promise<QuartoRenderResult> {
   return call<QuartoRenderResult>('renderQuarto', params);
+}
+
+export async function suggestExportPath(directory: string, name: string): Promise<{ path: string }> {
+  return call<{ path: string }>('suggestExportPath', { directory, name });
+}
+
+export async function getSettings(): Promise<SettingsEnvelope> {
+  return call<SettingsEnvelope>('getSettings');
+}
+
+export async function updateSettings(patch: Partial<AppSettings>): Promise<SettingsEnvelope> {
+  return call<SettingsEnvelope>('updateSettings', { patch });
+}
+
+export async function resetSettings(): Promise<SettingsEnvelope> {
+  return call<SettingsEnvelope>('resetSettings');
+}
+
+export async function revealSettings(): Promise<{ path: string }> {
+  return call<{ path: string }>('revealSettings');
 }

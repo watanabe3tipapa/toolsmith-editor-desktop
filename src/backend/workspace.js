@@ -212,6 +212,37 @@ async function writeExport({ path: destPath, content }) {
   return { path: target, mtimeMs: saved.mtim.getTime(), size: saved.size };
 }
 
+async function suggestExportPath({ directory, name }) {
+  const rawDir = String(directory ?? '');
+  if (!rawDir) fail('INVALID_PATH', '書き出し先が空です。');
+  if (!path.isAbsolute(rawDir)) fail('INVALID_PATH', '書き出し先は絶対パスで指定してください。');
+  const dir = path.normalize(rawDir);
+  let dirStat;
+  try {
+    dirStat = await tjs.stat(dir);
+  } catch {
+    fail('INVALID_PATH', '書き出し先のフォルダが存在しません。');
+  }
+  if (!dirStat.isDirectory) fail('INVALID_PATH', '書き出し先がフォルダではありません。');
+
+  const rawName = String(name ?? '').trim();
+  if (!rawName || rawName.includes('/') || rawName.includes('\\') || rawName === '.' || rawName === '..') {
+    fail('INVALID_NAME', '書き出しファイル名が不正です。');
+  }
+  const ext = path.extname(rawName);
+  const stem = ext ? rawName.slice(0, -ext.length) : rawName;
+  for (let index = 1; index <= 999; index += 1) {
+    const candidate = path.join(dir, index === 1 ? rawName : `${stem} (${index})${ext}`);
+    try {
+      const existing = await tjs.stat(candidate);
+      if (existing.isDirectory) continue;
+    } catch {
+      return { path: candidate };
+    }
+  }
+  fail('EXISTS', '書き出し先に空きファイル名が見つかりません。');
+}
+
 async function createFile({ name, content = '' }) {
   if (!root) fail('NO_WORKSPACE', 'ワークスペースが開かれていません。');
   const fileName = normalizeName(name);
@@ -278,6 +309,7 @@ export const api = {
   readFile,
   writeFile,
   writeExport,
+  suggestExportPath,
   createFile,
   renameFile,
   deleteFile,

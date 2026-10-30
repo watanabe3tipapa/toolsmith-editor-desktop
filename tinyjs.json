@@ -4,7 +4,7 @@
   "title": "Toolsmith Editor Desktop",
   "size": "1100x760",
   "id": "app.toolsmith.editor.desktop",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "minTinyjsVersion": "0.60.0",
   "backend": "src/backend/main.js",
   "fileExtensions": [

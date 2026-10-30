@@ -315,10 +315,45 @@ tinyjs の WebView では保存先をユーザーが選べず、デスクトッ�
   確認。PDFはTeX Liveのパッケージ不足で失敗し、エラーメッセージに
   詳細と導入手順が含まれることを確認。
 
+## 2026-10-30 設定ファイル管理
+
+- `src/backend/settings.js` を追加。設定は `(await app.paths()).data` 配下の
+  `settings.json` に保存する。
+  - 既定値: `theme` / `lastWorkspace` / `previewVisible` /
+    `autoSaveDelayMs` / `defaultExportDir`。
+  - `getSettings` / `updateSettings` / `resetSettings` / `revealSettings`。
+  - 更新値は種類・範囲・絶対パスを検証。既定の書き出し先は実在する
+    フォルダのみ許可。書き込みは同一フォルダの一時ファイル + rename。
+  - 壊れたJSONは `settings.json.corrupt-<timestamp>` に退避して既定値で再開。
+  - 初期化時は最後に開いたワークスペースだけ引き継ぐ（UIから編集できない
+    値を暗黙に失わないため）。
+- `src/frontend/lib/settings.ts`
+  - 初回起動時、旧 localStorage のテーマと tinyjs store の
+    last workspace を `settings.json` へ移行。
+  - 更新は直列化して read-modify-write の競合を防止。
+  - ブラウザプレビュー（ブリッジなし）では localStorage フォールバック。
+- `src/frontend/components/SettingsModal.tsx`
+  - テーマ、プレビュー表示、自動保存の待ち時間（300〜5000ms）、
+    既定の書き出し先、設定ファイルのパス表示 / Finderで表示、初期化。
+- 既定の書き出し先が設定されている場合、エクスポートとQuarto出力は
+  保存パネルを開かずにそのフォルダへ書き出す。同名ファイルがある場合は
+  `suggestExportPath` が ` (2)`, ` (3)` と連番を付ける。
+- エクスポート処理を Toolbar から Editor へ集約し、既定フォルダの扱いを
+  メニュー / ツールバーで共通化した。
+- ヘッダーの「設定」ボタンと、表示メニューの「設定…」から開ける。
+
+## 2026-10-30 v0.1.1
+
+- `package.json` / `package-lock.json` / `tinyjs.json` のバージョンを
+  `0.1.1` へ更新。ヘッダー表示と README のバッジも追随。
+- codespell でリポジトリ全体のタイポチェックを実施。
+  - 検出されたのは ABC 記譜の `afe`（コード進行）と、lockfile 内の
+    ハッシュ片（`bu` / `TAHt`）のみで、いずれも誤検出。修正なし。
+- v0.1.1 の内容は設定ファイル管理と Webクリップ / Quarto 連携の改善。
+
 ## 残課題
 
 - 内蔵Webパネル（Issue #1、MVPの外部ブラウザ連携＋本文取り込みは実装済み）
-- 設定ファイル管理（テーマ、既定の保存先など）
 - メニューの checked 状態とプレビュー表示の同期
 - Windows / Linux 向けビルド
 - 署名・公証を含む配布パイプライン

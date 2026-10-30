@@ -7,7 +7,7 @@ toolsmith-editor-desktop は、tinyjs（txiki.js + ネイティブ WebView）で
 > **書く、整える、持ち出す。その流れを、端末内で完結させる。** クラウドへのアカウント登録も、原稿の送信も不要です。ファイルは選んだフォルダに残り、他のエディタや Git とそのまま併用できます。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-v0.1.0-blue.svg)](https://github.com/watanabe3tipapa/toolsmith-editor-desktop/releases)
+[![Version](https://img.shields.io/badge/version-v0.1.1-blue.svg)](https://github.com/watanabe3tipapa/toolsmith-editor-desktop/releases)
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-live-blue.svg)](https://watanabe3tipapa.github.io/toolsmith-editor-desktop/)
 [![Lint and build](https://github.com/watanabe3tipapa/toolsmith-editor-desktop/actions/workflows/ci.yml/badge.svg)](https://github.com/watanabe3tipapa/toolsmith-editor-desktop/actions/workflows/ci.yml)
 [![GitHub](https://img.shields.io/github/issues/watanabe3tipapa/toolsmith-editor-desktop.svg)](https://github.com/watanabe3tipapa/toolsmith-editor-desktop/issues)
@@ -52,6 +52,7 @@ toolsmith-editor-desktop は、tinyjs（txiki.js + ネイティブ WebView）で
 - **自動保存と競合解決** — 編集停止後にファイルへ保存。外部で変更・削除された場合はダイアログで「再読み込み」「上書き」「キャンセル」を選択
 - **ABC 記法** — 楽譜ブロックを abcjs で描画し、再生・一時停止・停止・テンポ（QPM）調整が可能
 - **Webクリップ** — URLを入力すると本文を抽出してMarkdown化。現在の文書の末尾へ追記するか、新しい `.md` としてワークスペースへ保存。ログインが必要なページは外部ブラウザで開ける
+- **設定ファイル** — UIテーマ、プレビュー表示、自動保存の待ち時間、既定の書き出し先をJSONファイルへ保存。ヘッダーの「設定」または表示メニューから変更でき、設定ファイルをFinderで開ける
 - **ネイティブメニュー** — ファイル / 編集 / 表示メニューと、新規（⌘N）・フォルダを開く（⇧⌘O）・保存（⌘S）・プレビュー切替（⇧⌘P）などのショートカット
 - **UIテーマ切替** — ヘッダーのボタンで cosmic-ui（Sci-Fi）と neo-brutalism-ui（太い罫線・ハードシャドウ）を切り替え。選択はローカルに保存
 - **書き出し** — OS の保存パネルから Markdown / HTML / JSON / Quarto / Plain Text を任意の場所へ保存
@@ -63,14 +64,14 @@ toolsmith-editor-desktop は、tinyjs（txiki.js + ネイティブ WebView）で
 - **フロントエンド**: Vite + React 18 + Lexical 0.32
 - **スタイリング**: Tailwind CSS v4 + cosmic-ui / neo-brutalism-ui（切り替え可能な2テーマ）
 - **デスクトップ基盤**: tinyjs 0.60+（txiki.js バックエンド + ネイティブ WebView）
-- **バックエンド**: ファイル I/O、ワークスペース監視、パス検証、atomic write、Webページ取得、Quarto CLI 実行
+- **バックエンド**: ファイル I/O、ワークスペース監視、パス検証、atomic write、Webページ取得、Quarto CLI 実行、設定ファイル管理
 - **ブリッジ**: `window.tiny` を薄くラップした `src/frontend/lib/desktop.ts`
 
 ### データとセキュリティ
 
 - 原稿は選択したフォルダのファイルとして保存され、外部サーバーへ送信されません
 - アカウント登録、テレメトリ、クラウド同期はありません
-- 最後に開いたワークスペースのパスのみ、tinyjs のローカルストアに保存します
+- 最後に開いたワークスペースのパスなどは、アプリのデータフォルダにある `settings.json` に保存します（テーマ、プレビュー表示、自動保存、既定の書き出し先も同ファイル）
 - ワークスペース内の読み書きはバックエンドのパスガードで検証し、エクスポート先は OS の保存パネルで選ばれたパスのみに書き込みます
 - Webクリップは入力されたURLへ直接アクセスしてHTMLを取得します。認証情報は保持せず、ログインが必要なページは外部ブラウザへ誘導します
 
@@ -160,6 +161,7 @@ src/
 │   ├── workspace.js                # ワークスペース・ファイル I/O・監視
 │   ├── web-clip.js                 # Webページ取得・外部ブラウザ起動
 │   ├── quarto.js                   # Quarto CLI の検出・レンダリング
+│   ├── settings.js                 # settings.json の読み書き・検証
 │   └── path-guard.js               # パス検証・エラー整形
 └── frontend/                       # WebView フロントエンド
     ├── App.jsx                     # レイアウト
@@ -171,12 +173,14 @@ src/
     │   ├── MarkdownPreview.tsx     # Markdown ソース表示
     │   ├── AbcSheet.tsx            # ABC 記法の描画・再生
     │   ├── WebClipModal.tsx        # Webページ取り込みダイアログ
+    │   ├── SettingsModal.tsx       # 設定ダイアログ
     │   ├── LinkEditorModal.tsx     # リンク入力
     │   └── ErrorBoundary.tsx       # 例外フォールバック
     ├── lib/
     │   ├── desktop.ts              # tinyjs ブリッジ
     │   ├── export.ts               # エクスポート生成・ネイティブ保存
     │   ├── web-clip.ts             # Readability + Turndown で本文抽出
+    │   ├── settings.ts             # 設定の読み込み・更新・移行
     │   ├── menu.ts                 # ネイティブメニュー定義
     │   ├── theme.ts                # UIテーマの適用・永続化
     │   ├── markdown.ts             # Lexical トランスフォーマー
@@ -199,6 +203,7 @@ tinyjs.json                         # tinyjs アプリ設定
 4. 編集内容は自動保存されます。手動保存は ⌘S、または保存ボタンから
 5. Webページを取り込むときは「Webクリップ」ボタン、または「ファイル → Webページを取り込む…」からURLを入力します。抽出結果は現在の文書へ追記するか、新しいMarkdownファイルとして保存できます
 6. 書き出したいときはツールバーのエクスポート、または「ファイル → エクスポート」から形式を選択します。Quarto CLI を導入済みなら「QuartoでHTML…」「QuartoでPDF…」でレンダリングできます（PDF には LaTeX / TinyTeX が必要です）
+7. テーマ、プレビュー表示、自動保存の待ち時間、既定の書き出し先は、ヘッダーの「設定」から変更できます。設定はアプリのデータフォルダの `settings.json` に保存されます
 
 ## 既知の制約とロードマップ
 
@@ -215,6 +220,7 @@ tinyjs.json                         # tinyjs アプリ設定
 - [x] cosmic-ui / neo-brutalism-ui のUIテーマ切替
 - [x] Webクリップ（外部ブラウザ連携＋本文取り込み）
 - [x] Quarto CLI 連携（HTML / PDF レンダリング、未導入時は HTML 出力へフォールバック）
+- [x] 設定ファイル管理（UIテーマ、プレビュー、自動保存、既定の書き出し先）
 - [x] lint / build の GitHub Actions CI
 - [x] タグ起点のリリース自動化（Universal ビルド / SHA-256 / GitHub Release）
 - [x] GitHub Pages のランディングページ
@@ -222,7 +228,6 @@ tinyjs.json                         # tinyjs アプリ設定
 ### 次の候補
 
 - [ ] 内蔵Webパネル（アプリ内ブラウザ表示、[#1](https://github.com/watanabe3tipapa/toolsmith-editor-desktop/issues/1)）
-- [ ] 設定ファイル管理（テーマ、既定の保存先）
 - [ ] メニューの checked 状態とプレビュー表示の同期
 - [ ] Windows / Linux 向けビルド
 - [ ] 署名・公証を含む配布パイプライン

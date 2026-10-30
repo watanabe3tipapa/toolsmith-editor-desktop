@@ -34,6 +34,8 @@ export const APP_MENU: AppMenuItem[] = [
     items: [
       { id: 'view:refresh', label: 'ファイル一覧を更新', key: 'shift+r' },
       { id: 'view:toggle-preview', label: 'ソースプレビューの表示を切り替え', key: 'shift+p' },
+      { separator: true },
+      { id: 'app:settings', label: '設定…' },
     ],
   },
 ];
