@@ -1,7 +1,8 @@
 import { api as workspaceApi, setApp } from './workspace.js';
 import { setApp as setWebClipApp, webClipApi } from './web-clip.js';
+import { quartoApi } from './quarto.js';
 
-export const api = { ...workspaceApi, ...webClipApi };
+export const api = { ...workspaceApi, ...webClipApi, ...quartoApi };
 
 export function init(app) {
   setApp(app);

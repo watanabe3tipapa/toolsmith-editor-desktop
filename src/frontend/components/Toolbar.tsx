@@ -35,6 +35,7 @@ import {
 import { EXPORT_OPTIONS, saveExport } from '../lib/export';
 import type { ExportOption } from '../lib/export';
 import { alertMessage, parseBridgeError } from '../lib/desktop';
+import type { QuartoFormat } from '../lib/desktop';
 import LinkEditorModal from './LinkEditorModal';
 
 type ToolbarButtonProps = {
@@ -71,9 +72,10 @@ type ToolbarProps = {
   editor: any;
   markdown: string;
   documentName?: string | null;
+  onQuartoExport?: (format: QuartoFormat) => void;
 };
 
-function Toolbar({ editor, markdown, documentName }: ToolbarProps) {
+function Toolbar({ editor, markdown, documentName, onQuartoExport }: ToolbarProps) {
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
   const [isUnderline, setIsUnderline] = useState(false);
@@ -293,6 +295,21 @@ function Toolbar({ editor, markdown, documentName }: ToolbarProps) {
                 className="block w-full px-4 py-2 text-left text-sm text-foreground/80 hover:bg-primary/20 hover:text-primary transition-colors"
               >
                 {option.label}
+              </button>
+            ))}
+            <div className="my-1 border-t border-primary/30" role="separator" />
+            {(['html', 'pdf'] as const).map((format) => (
+              <button
+                key={`quarto-${format}`}
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  setShowDownloadMenu(false);
+                  onQuartoExport?.(format);
+                }}
+                className="block w-full px-4 py-2 text-left text-sm text-foreground/80 hover:bg-primary/20 hover:text-primary transition-colors"
+              >
+                Quartoで{format.toUpperCase()}…
               </button>
             ))}
           </div>

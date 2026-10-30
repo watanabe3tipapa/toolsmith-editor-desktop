@@ -55,6 +55,7 @@ toolsmith-editor-desktop は、tinyjs（txiki.js + ネイティブ WebView）で
 - **ネイティブメニュー** — ファイル / 編集 / 表示メニューと、新規（⌘N）・フォルダを開く（⇧⌘O）・保存（⌘S）・プレビュー切替（⇧⌘P）などのショートカット
 - **UIテーマ切替** — ヘッダーのボタンで cosmic-ui（Sci-Fi）と neo-brutalism-ui（太い罫線・ハードシャドウ）を切り替え。選択はローカルに保存
 - **書き出し** — OS の保存パネルから Markdown / HTML / JSON / Quarto / Plain Text を任意の場所へ保存
+- **Quarto CLI 連携** — インストール済みの Quarto CLI で HTML（単体ファイル）または PDF をレンダリング。Quarto 未導入時は HTML 単体出力へフォールバック
 - **ドラッグ＆ドロップ** — Finder から Markdown をドロップして即時オープン
 
 ### アーキテクチャ
@@ -62,7 +63,7 @@ toolsmith-editor-desktop は、tinyjs（txiki.js + ネイティブ WebView）で
 - **フロントエンド**: Vite + React 18 + Lexical 0.32
 - **スタイリング**: Tailwind CSS v4 + cosmic-ui / neo-brutalism-ui（切り替え可能な2テーマ）
 - **デスクトップ基盤**: tinyjs 0.60+（txiki.js バックエンド + ネイティブ WebView）
-- **バックエンド**: ファイル I/O、ワークスペース監視、パス検証、atomic write、Webページ取得
+- **バックエンド**: ファイル I/O、ワークスペース監視、パス検証、atomic write、Webページ取得、Quarto CLI 実行
 - **ブリッジ**: `window.tiny` を薄くラップした `src/frontend/lib/desktop.ts`
 
 ### データとセキュリティ
@@ -158,6 +159,7 @@ src/
 │   ├── main.js                     # エントリポイント / ファイルオープン通知
 │   ├── workspace.js                # ワークスペース・ファイル I/O・監視
 │   ├── web-clip.js                 # Webページ取得・外部ブラウザ起動
+│   ├── quarto.js                   # Quarto CLI の検出・レンダリング
 │   └── path-guard.js               # パス検証・エラー整形
 └── frontend/                       # WebView フロントエンド
     ├── App.jsx                     # レイアウト
@@ -196,7 +198,7 @@ tinyjs.json                         # tinyjs アプリ設定
 3. ツールバーで書式を整え、必要ならソースプレビューを確認します
 4. 編集内容は自動保存されます。手動保存は ⌘S、または保存ボタンから
 5. Webページを取り込むときは「Webクリップ」ボタン、または「ファイル → Webページを取り込む…」からURLを入力します。抽出結果は現在の文書へ追記するか、新しいMarkdownファイルとして保存できます
-6. 書き出したいときはツールバーのエクスポート、または「ファイル → エクスポート」から形式を選択します
+6. 書き出したいときはツールバーのエクスポート、または「ファイル → エクスポート」から形式を選択します。Quarto CLI を導入済みなら「QuartoでHTML…」「QuartoでPDF…」でレンダリングできます（PDF には LaTeX / TinyTeX が必要です）
 
 ## 既知の制約とロードマップ
 
@@ -212,6 +214,7 @@ tinyjs.json                         # tinyjs アプリ設定
 - [x] ネイティブメニューとキーボードショートカット
 - [x] cosmic-ui / neo-brutalism-ui のUIテーマ切替
 - [x] Webクリップ（外部ブラウザ連携＋本文取り込み）
+- [x] Quarto CLI 連携（HTML / PDF レンダリング、未導入時は HTML 出力へフォールバック）
 - [x] lint / build の GitHub Actions CI
 - [x] タグ起点のリリース自動化（Universal ビルド / SHA-256 / GitHub Release）
 - [x] GitHub Pages のランディングページ
@@ -219,7 +222,6 @@ tinyjs.json                         # tinyjs アプリ設定
 ### 次の候補
 
 - [ ] 内蔵Webパネル（アプリ内ブラウザ表示、[#1](https://github.com/watanabe3tipapa/toolsmith-editor-desktop/issues/1)）
-- [ ] Quarto CLI 連携（`.qmd` のコンパイル）
 - [ ] 設定ファイル管理（テーマ、既定の保存先）
 - [ ] メニューの checked 状態とプレビュー表示の同期
 - [ ] Windows / Linux 向けビルド
@@ -230,6 +232,7 @@ tinyjs.json                         # tinyjs アプリ設定
 - 現在の対象は macOS 15 以降です
 - ワークスペース直下の Markdown のみを一覧表示します（サブフォルダは未対応）
 - アプリ本体の Web 配信は行いません
+- Quarto レンダリングはコードチャンクを実行しません（`--no-execute`）。図表の生成など実行が必要な文書は Quarto CLI 側でレンダリングしてください
 
 ## ドキュメント
 

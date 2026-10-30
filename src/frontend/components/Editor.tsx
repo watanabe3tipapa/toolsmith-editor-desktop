@@ -25,7 +25,7 @@ import FileSidebar from './FileSidebar';
 import WebClipModal from './WebClipModal';
 import { DEFAULT_MARKDOWN } from '../lib/constants';
 import { TRANSFORMERS_WITH_TABLE } from '../lib/markdown';
-import { EXPORT_OPTIONS, saveExport } from '../lib/export';
+import { EXPORT_OPTIONS, saveExport, suggestedExportName } from '../lib/export';
 import type { ExportFormat } from '../lib/export';
 import { APP_MENU } from '../lib/menu';
 import {
@@ -45,14 +45,17 @@ import {
   openWorkspace,
   parseBridgeError,
   pickWorkspaceFolder,
+  pickSavePath,
   promptText,
   rememberWorkspace,
   renameFile as renameWorkspaceFile,
+  checkQuarto,
+  renderQuarto,
   setAppMenu,
   setWindowTitle,
   writeFile,
 } from '../lib/desktop';
-import type { OpenWorkspaceResult, WorkspaceFile } from '../lib/desktop';
+import type { OpenWorkspaceResult, QuartoFormat, WorkspaceFile } from '../lib/desktop';
 
 const theme = {
   ltr: 'ltr',
@@ -370,6 +373,49 @@ function Editor() {
       await alertMessage('エクスポートできませんでした。', parsed.message);
     }
   }, []);
+
+  const exportWithQuarto = useCallback(
+    async (format: QuartoFormat) => {
+      const targetPath = activePathRef.current;
+      if (!targetPath) {
+        await alertMessage('Quartoで書き出すファイルがありません。');
+        return;
+      }
+      const base = nameFromPath(targetPath);
+      try {
+        const status = await checkQuarto();
+        if (!status.available) {
+          const fallback =
+            format === 'html' &&
+            (await confirmAction(
+              'Quarto CLIが見つかりません。',
+              `${status.reason ?? ''}\nHTML単体の書き出しに切り替えますか？`,
+            ));
+          if (fallback) await exportDocument('html');
+          else {
+            await alertMessage(
+              'Quarto CLIが見つかりません。',
+              'https://quarto.org/docs/get-started/ からインストールしてください。',
+            );
+          }
+          return;
+        }
+        const target = await pickSavePath([format], suggestedExportName(base, format));
+        if (!target) return;
+        const result = await renderQuarto({
+          markdown: markdownRef.current,
+          name: base,
+          format,
+          outputPath: target,
+        });
+        await alertMessage(`Quartoで${format.toUpperCase()}を書き出しました。`, result.path);
+      } catch (error) {
+        const parsed = parseBridgeError(error);
+        await alertMessage('Quartoで書き出せませんでした。', parsed.message);
+      }
+    },
+    [exportDocument],
+  );
 
   const scheduleSave = useCallback((value: string) => {
     if (saveTimerRef.current !== null) {
@@ -721,6 +767,8 @@ function Editor() {
     'export:json': () => void exportDocument('json'),
     'export:qmd': () => void exportDocument('qmd'),
     'export:txt': () => void exportDocument('txt'),
+    'export:quarto-html': () => void exportWithQuarto('html'),
+    'export:quarto-pdf': () => void exportWithQuarto('pdf'),
   };
 
   useEffect(() => {
@@ -843,7 +891,12 @@ function Editor() {
                   </button>
                 </div>
               </div>
-              <Toolbar editor={editor} markdown={markdown} documentName={activePath ? nameFromPath(activePath) : null} />
+              <Toolbar
+                editor={editor}
+                markdown={markdown}
+                documentName={activePath ? nameFromPath(activePath) : null}
+                onQuartoExport={(format) => void exportWithQuarto(format)}
+              />
               <div className="relative mt-2 min-h-[300px] text-left">
                 <RichTextPlugin
                   contentEditable={<ContentEditable className="editor-input p-4 text-left" style={{ textAlign: 'left' }} role="textbox" ariaLabel="リッチテキストエディタ" ariaMultiline="true" />}

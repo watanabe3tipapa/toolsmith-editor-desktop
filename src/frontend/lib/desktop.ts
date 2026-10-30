@@ -43,6 +43,21 @@ export type WebPageResult = {
   html: string;
 };
 
+export type QuartoStatus = {
+  available: boolean;
+  version: string | null;
+  reason: string | null;
+};
+
+export type QuartoFormat = 'html' | 'pdf';
+
+export type QuartoRenderResult = {
+  path: string;
+  size: number;
+  format: QuartoFormat;
+  mtimeMs: number;
+};
+
 export type AppMenuItem = {
   id?: string;
   label?: string;
@@ -243,4 +258,17 @@ export async function fetchWebPage(url: string): Promise<WebPageResult> {
 
 export async function openExternal(url: string): Promise<{ url: string }> {
   return call<{ url: string }>('openExternal', { url });
+}
+
+export async function checkQuarto(): Promise<QuartoStatus> {
+  return call<QuartoStatus>('checkQuarto');
+}
+
+export async function renderQuarto(params: {
+  markdown: string;
+  name: string;
+  format: QuartoFormat;
+  outputPath: string;
+}): Promise<QuartoRenderResult> {
+  return call<QuartoRenderResult>('renderQuarto', params);
 }

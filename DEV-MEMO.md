@@ -291,10 +291,33 @@ tinyjs の WebView では保存先をユーザーが選べず、デスクトッ�
 - 認証情報は保持しない。ログインが必要なページは外部ブラウザへ誘導する。
 - アプリ内ブラウザ（ネイティブWebViewの追加）は引き続き未着手。
 
+## 2026-10-30 Quarto CLI 連携
+
+- `src/backend/quarto.js` を追加。
+  - `checkQuarto()`: `quarto --version` を実行して導入状況とバージョンを返す。
+    `tjs.spawn` は未導入時に同期例外（ENOENT）を投げるため捕捉して
+    `available: false` に変換する。
+  - `renderQuarto({ markdown, name, format, outputPath })`:
+    - `html` / `pdf` に対応。`tjs.makeTempDir` に `document.qmd` を書き、
+      `quarto render ... --no-execute` を実行してから、選ばれた保存先へ
+      atomic copy（同一ディレクトリの一時ファイル + rename）。
+    - HTMLは `--embed-resources` で単体ファイル化。PDFはLaTeX（TinyTeX）が
+      必要で、失敗時は導入手順をメッセージに含める。
+    - タイムアウト（180秒）、ANSIエスケープ除去、stderrの末尾1,500文字を
+      エラー詳細として返す。一時ディレクトリは finally で再帰削除。
+  - セキュリティ: 文書内のコードチャンクは `--no-execute` で実行しない。
+- `src/frontend/lib/desktop.ts` に `checkQuarto` / `renderQuarto` を追加。
+- エクスポートメニューとツールバーに「QuartoでHTML…」「QuartoでPDF…」を追加。
+  - 実行前にQuartoの有無を確認し、未導入かつHTML出力の場合は
+    既存のHTML単体エクスポートへフォールバックできる。
+  - 保存先は OS の保存パネルで選択。拡張子は出力形式に合わせて検証。
+- 検証: Quarto 1.9.37 でHTMLレンダリング（表・タイトル・単体ファイル化）を
+  確認。PDFはTeX Liveのパッケージ不足で失敗し、エラーメッセージに
+  詳細と導入手順が含まれることを確認。
+
 ## 残課題
 
 - 内蔵Webパネル（Issue #1、MVPの外部ブラウザ連携＋本文取り込みは実装済み）
-- Quarto CLI 連携（現在の `.qmd` 出力はフロントエンド生成のみ）
 - 設定ファイル管理（テーマ、既定の保存先など）
 - メニューの checked 状態とプレビュー表示の同期
 - Windows / Linux 向けビルド
